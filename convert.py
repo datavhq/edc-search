@@ -28,6 +28,7 @@ BANK_CONFIGS = {
         "sn_col": "S/N EDC",
         "slip_col": "Slip Line_1",
         "merchant_col": "Slip Line_1",
+		"merchant_col": "Slip Line_1",
         "sw_col": "SW Version",
         "model_col": "Model",
         # function columns (Y/N หรือ 1/0)
