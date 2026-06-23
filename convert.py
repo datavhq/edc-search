@@ -61,6 +61,36 @@ BANK_CONFIGS = {
         "func_cols": {},
         "sub_tid_cols": [],
     },
+    "WOM": {
+        "file_pattern": "*WOM*.xlsx",
+        "sheet": None,          # None = sheet แรก
+        "tid_col": "MAIN_TID",
+        "mid_col": "MAIN_MID",
+        "sn_col": "SERIAL_NO",
+        "slip_col": "Slip Line_1",
+	"slip_col": "Slip Line_2",
+	"slip_col": "Slip Line_3",
+        "merchant_col": "Slip Line_1",
+        "sw_col": "SW VERSION",
+        "model_col": "Model",
+        # function columns (Y/N หรือ 1/0)
+        "func_cols": {
+            "KBANK_PRE_AUTH": "FUNCTION_KBANK_PRE_AUTH",
+            "KBANK_TIP": "FUNCTION_KBANK_TIP",
+            "KBANK_OFFLINE": "FUNCTION_KBANK_OFFLINE",
+            "KBANK_KEYIN": "FUNCTION_KBANK_KEYIN",
+            "KBANK_REFUND": "FUNCTION_KBANK_REFUND",
+            "TPN_PRE_AUTH": "FUNCTION_TPN_PRE_AUTH",
+            "TPN_PRE_AUTH_CANCEL": "FUNCTION_TPN_PRE_AUTH_CANCEL",
+            "TPN_SALE_COMPLETE_ONLINE": "FUNCTION_TPN_SALE_COMPLETE_ONLINE",
+            "TPN_REFUND": "FUNCTION_TPN_REFUND",
+            "TPN_KEYIN": "FUNCTION_TPN_KEYIN",
+        },
+        # sub TID columns (แสดงเพิ่มเติม)
+        "sub_tid_cols": ["TID_DCC", "TID_SmartPay", "TID_TPN", "TID_Alipay",
+                         "TID_Wechat", "TID_BBL_AMEX", "TID_Redemption",
+                         "TID_QR_Credit_Card", "TID_K_CHECK_ID"],
+    },
     "BBL": {
         "file_pattern": "*BBL*.xlsx",
         "sheet": None,
@@ -77,7 +107,7 @@ BANK_CONFIGS = {
     "BAY": {
         "file_pattern": "*BAY*.xlsx",
         "sheet": None,
-        "tid_col": "TID BAY",
+        "tid_col": "TIDหลัก",
         "mid_col": "MID BAY",
         "sn_col": None,
         "slip_col": "TM LINE1",

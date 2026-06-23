@@ -19,6 +19,8 @@
 
     --kbank:   #1e8a4a;
     --kbank-bg:#0d2e1a;
+    --wom:     #1e8a4a;
+    --wom-bg:  #0d2e1a;
     --scb:     #4a3fb5;
     --scb-bg:  #1a1650;
     --bbl:     #b54040;
@@ -168,6 +170,7 @@
     letter-spacing: 0.5px;
   }
   .bank-KBANK { background: var(--kbank-bg); color: #4dbb78; border: 1px solid var(--kbank); }
+  .bank-WOM   { background: var(--wom-bg);   color: #9b8fff; border: 1px solid var(--wom); }
   .bank-SCB   { background: var(--scb-bg);   color: #9b8fff; border: 1px solid var(--scb); }
   .bank-BBL   { background: var(--bbl-bg);   color: #f07070; border: 1px solid var(--bbl); }
   .bank-BAY   { background: var(--bay-bg);   color: #f0a840; border: 1px solid var(--bay); }
@@ -294,6 +297,7 @@
   <div class="filters">
     <div class="pill active-all" data-bank="ALL">ทั้งหมด</div>
     <div class="pill" data-bank="KBANK">KBANK</div>
+    <div class="pill" data-bank="WOM">WOM</div>
     <div class="pill" data-bank="SCB">SCB</div>
     <div class="pill" data-bank="BBL">BBL</div>
     <div class="pill" data-bank="BAY">BAY</div>
@@ -449,12 +453,14 @@ function updateStats(total, found, query) {
   const bar = document.getElementById("stats-bar");
   if (!query) {
     const kbank = allRecords.filter(r=>r.bank==="KBANK").length;
+    const WOM   = allRecords.filter(r=>r.bank==="WOM").length;
     const scb   = allRecords.filter(r=>r.bank==="SCB").length;
     const bbl   = allRecords.filter(r=>r.bank==="BBL").length;
     const bay   = allRecords.filter(r=>r.bank==="BAY").length;
     bar.innerHTML = `
       <span>ทั้งหมด <strong>${total.toLocaleString()}</strong> เครื่อง</span>
       <span>KBANK <strong>${kbank.toLocaleString()}</strong></span>
+      <span>WOM <strong>${wom.toLocaleString()}</strong></span>
       <span>SCB <strong>${scb.toLocaleString()}</strong></span>
       <span>BBL <strong>${bbl.toLocaleString()}</strong></span>
       <span>BAY <strong>${bay.toLocaleString()}</strong></span>`;
