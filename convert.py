@@ -70,7 +70,8 @@ BANK_CONFIGS = {
         "slip_col": "SLIP_LINE_1",
 	    "slip_col": "SLIP_LINE_2",
 	    "slip_col": "SLIP_LINE_3",
-        "merchant_col": "Slip Line_1",
+        "merchant_col": "SLIP_LINE_1",
+		"merchant_col": "SLIP_LINE_2",
         "sw_col": "SW_VERSION",
         "model_col": "Model",
         # function columns (Y/N หรือ 1/0 หรือ '1/'0)
