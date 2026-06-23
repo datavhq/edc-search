@@ -68,8 +68,8 @@ BANK_CONFIGS = {
         "mid_col": "MAIN_MID",
         "sn_col": "SERIAL_NO",
         "slip_col": "SLIP_LINE_1",
-	"slip_col": "SLIP_LINE_2",
-	"slip_col": "SLIP_LINE_3",
+	    "slip_col": "SLIP_LINE_2",
+	    "slip_col": "SLIP_LINE_3",
         "merchant_col": "Slip Line_1",
         "sw_col": "SW_VERSION",
         "model_col": "Model",
@@ -89,7 +89,7 @@ BANK_CONFIGS = {
         # sub TID columns (แสดงเพิ่มเติม)
         "sub_tid_cols": ["TID_DCC", "TID_SMARTPAY", "TID_TPN", "TID_Alipay",
                          "TID_Wechat", "TID_BBL_AMEX", "TID_REDEMPTION",
-                         "TID_QR_Credit_Card","TID_KPLUS", "TID_K_CHECK_ID"],
+                         "TID_QR_Credit_Card", "TID_KPLUS", "TID_K_CHECK_ID"],
     },
     "BBL": {
         "file_pattern": "*BBL*.xlsx",
