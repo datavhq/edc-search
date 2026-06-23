@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDC Search — TID / MID / Merchant</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0f1117;
+    --surface:  #1a1d27;
+    --surface2: #22263a;
+    --border:   #2e3347;
+    --text:     #e8eaf2;
+    --muted:    #7b82a0;
+    --accent:   #4f7cff;
+    --accent2:  #6ee7b7;
+
+    --kbank:   #1e8a4a;
+    --kbank-bg:#0d2e1a;
+    --scb:     #4a3fb5;
+    --scb-bg:  #1a1650;
+    --bbl:     #b54040;
+    --bbl-bg:  #2e1515;
+    --bay:     #c47c1e;
+    --bay-bg:  #2e1f0a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+  }
+  .logo span { color: var(--text); }
+  .update-badge {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Search area ── */
+  .search-wrap {
+    padding: 24px 20px 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .search-box {
+    position: relative;
+  }
+  .search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+  #search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px 13px 44px;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #search-input::placeholder { color: var(--muted); }
+  #search-input:focus { border-color: var(--accent); }
+
+  /* ── Filter pills ── */
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .pill {
+    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface2);
+    color: var(--muted);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .pill.active-kbank { background: var(--kbank-bg); border-color: var(--kbank); color: #4dbb78; }
+  .pill.active-scb   { background: var(--scb-bg);   border-color: var(--scb);   color: #9b8fff; }
+  .pill.active-bbl   { background: var(--bbl-bg);   border-color: var(--bbl);   color: #f07070; }
+  .pill.active-bay   { background: var(--bay-bg);   border-color: var(--bay);   color: #f0a840; }
+  .pill.active-all   { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .stat-item strong { color: var(--text); }
+
+  /* ── Results ── */
+  .results {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.15s;
+  }
+  .card:hover { border-color: #3a3f5c; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .bank-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+  }
+  .bank-KBANK { background: var(--kbank-bg); color: #4dbb78; border: 1px solid var(--kbank); }
+  .bank-SCB   { background: var(--scb-bg);   color: #9b8fff; border: 1px solid var(--scb); }
+  .bank-BBL   { background: var(--bbl-bg);   color: #f07070; border: 1px solid var(--bbl); }
+  .bank-BAY   { background: var(--bay-bg);   color: #f0a840; border: 1px solid var(--bay); }
+
+  .tid-label {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text);
+  }
+  .merchant-name {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ── Info grid ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px 20px;
+    margin-bottom: 12px;
+  }
+  .info-item label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .info-item span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+  .info-item span.empty { color: var(--muted); font-style: italic; font-family: inherit; font-weight: 400; }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+  /* ── Function tags ── */
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .tag-row label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-right: 4px; }
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(79, 124, 255, 0.15);
+    color: #7da4ff;
+    border: 1px solid rgba(79, 124, 255, 0.3);
+  }
+  .tag.sub {
+    background: rgba(110, 231, 183, 0.1);
+    color: #6ee7b7;
+    border-color: rgba(110, 231, 183, 0.25);
+  }
+  .no-tag { font-size: 12px; color: var(--muted); font-style: italic; }
+
+  /* ── Sub TIDs ── */
+  .sub-tids { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .sub-tid-item {
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 8px;
+    color: var(--muted);
+  }
+  .sub-tid-item strong { color: var(--text); margin-left: 4px; font-family: monospace; }
+
+  /* ── Empty / Loading ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 16px; color: var(--text); margin-bottom: 6px; }
+
+  /* ── Highlight match ── */
+  mark {
+    background: rgba(79, 124, 255, 0.35);
+    color: var(--text);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
+  /* ── Limit notice ── */
+  .limit-notice {
+    text-align: center;
+    padding: 16px;
+    color: var(--muted);
+    font-size: 12px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .info-grid { grid-template-columns: 1fr 1fr; }
+    .merchant-name { display: none; }
+    .tid-label { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">EDC<span>Search</span></div>
+  <div class="update-badge" id="update-badge">กำลังโหลด...</div>
+</header>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="search-input" placeholder="ค้นหา TID, MID, S/N, ชื่อร้าน..." autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>
+
+  <div class="filters">
+    <div class="pill active-all" data-bank="ALL">ทั้งหมด</div>
+    <div class="pill" data-bank="KBANK">KBANK</div>
+    <div class="pill" data-bank="SCB">SCB</div>
+    <div class="pill" data-bank="BBL">BBL</div>
+    <div class="pill" data-bank="BAY">BAY</div>
+  </div>
+</div>
+
+<div class="stats-bar" id="stats-bar">
+  <span>กำลังโหลดข้อมูล...</span>
+</div>
+
+<div class="results" id="results">
+  <div class="empty-state">
+    <div class="icon">🔍</div>
+    <h3>พิมพ์เพื่อค้นหา</h3>
+    <p>TID, MID, S/N หรือชื่อร้าน</p>
+  </div>
+</div>
+
+<script>
+let allRecords = [];
+let activeBank = "ALL";
+const RESULT_LIMIT = 50;
+
+// ── Load data ──
+async function loadData() {
+  try {
+    const res = await fetch("data.json?" + Date.now());
+    const data = await res.json();
+    allRecords = data.records || [];
+    document.getElementById("update-badge").textContent =
+      "อัพเดท: " + (data.updated || "-");
+    updateStats(allRecords.length, allRecords.length);
+    render("");
+  } catch (e) {
+    document.getElementById("results").innerHTML =
+      `<div class="empty-state"><div class="icon">⚠️</div><h3>โหลดข้อมูลไม่สำเร็จ</h3><p>ตรวจสอบว่ามีไฟล์ data.json อยู่ในโฟลเดอร์เดียวกัน</p></div>`;
+    document.getElementById("update-badge").textContent = "ไม่พบข้อมูล";
+  }
+}
+
+// ── Filter + search ──
+function search(query) {
+  const q = query.trim().toLowerCase();
+
+  let pool = activeBank === "ALL"
+    ? allRecords
+    : allRecords.filter(r => r.bank === activeBank);
+
+  if (!q) return { results: [], total: pool.length, query: "" };
+
+  const matched = pool.filter(r =>
+    (r.tid      && r.tid.toLowerCase().includes(q)) ||
+    (r.mid      && r.mid.toLowerCase().includes(q)) ||
+    (r.sn       && r.sn.toLowerCase().includes(q))  ||
+    (r.merchant && r.merchant.toLowerCase().includes(q)) ||
+    (r.sw       && r.sw.toLowerCase().includes(q))  ||
+    Object.values(r.sub_tids || {}).some(v => v.toLowerCase().includes(q))
+  );
+
+  return { results: matched, total: pool.length, query: q };
+}
+
+// ── Highlight ──
+function hl(text, query) {
+  if (!query || !text) return text || "";
+  const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(esc, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+// ── Render cards ──
+function render(query) {
+  const { results, total, query: q } = search(query);
+  const container = document.getElementById("results");
+  updateStats(total, results.length, q);
+
+  if (!q) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="icon">🔍</div>
+      <h3>พิมพ์เพื่อค้นหา</h3>
+      <p>TID, MID, S/N หรือชื่อร้าน — ผลจะโผล่ทันที</p>
+    </div>`;
+    return;
+  }
+
+  if (results.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="icon">😶</div>
+      <h3>ไม่พบ "${query}"</h3>
+      <p>ลองค้นหาด้วย TID / MID / S/N / ชื่อร้าน</p>
+    </div>`;
+    return;
+  }
+
+  const shown = results.slice(0, RESULT_LIMIT);
+  const html = shown.map(r => cardHTML(r, q)).join("");
+
+  const moreHTML = results.length > RESULT_LIMIT
+    ? `<div class="limit-notice">แสดง ${RESULT_LIMIT} จาก ${results.length.toLocaleString()} รายการ — พิมพ์ให้เฉพาะเจาะจงขึ้นเพื่อแสดงผลที่แม่นยำ</div>`
+    : "";
+
+  container.innerHTML = html + moreHTML;
+}
+
+function cardHTML(r, q) {
+  const funcs = (r.funcs || []).map(f =>
+    `<span class="tag">${f}</span>`).join("") || `<span class="no-tag">-</span>`;
+
+  const subTids = Object.entries(r.sub_tids || {}).map(([k, v]) =>
+    `<span class="sub-tid-item">${k}<strong>${hl(v, q)}</strong></span>`
+  ).join("");
+
+  const subRow = subTids
+    ? `<div class="sub-tids"><span style="font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-right:4px">Sub TID</span>${subTids}</div>`
+    : "";
+
+  return `
+  <div class="card">
+    <div class="card-header">
+      <span class="bank-badge bank-${r.bank}">${r.bank}</span>
+      <span class="tid-label">TID: ${hl(r.tid, q)}</span>
+      <span class="merchant-name">${hl(r.merchant, q)}</span>
+    </div>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>TID</label>
+        <span>${hl(r.tid, q) || '<span class="empty">-</span>'}</span>
+      </div>
+      <div class="info-item">
+        <label>MID</label>
+        <span>${hl(r.mid, q) || '<span class="empty">-</span>'}</span>
+      </div>
+      <div class="info-item">
+        <label>S/N</label>
+        <span>${hl(r.sn, q) || '<span class="empty">-</span>'}</span>
+      </div>
+      <div class="info-item">
+        <label>ชื่อร้าน / Slip</label>
+        <span>${hl(r.merchant, q) || '<span class="empty">-</span>'}</span>
+      </div>
+      ${r.model ? `<div class="info-item"><label>Model</label><span>${r.model}</span></div>` : ''}
+      ${r.sw    ? `<div class="info-item"><label>SW Version</label><span>${r.sw}</span></div>` : ''}
+    </div>
+    <hr class="divider">
+    <div class="tag-row">
+      <label>Function</label>
+      ${funcs}
+    </div>
+    ${subRow}
+  </div>`;
+}
+
+function updateStats(total, found, query) {
+  const bar = document.getElementById("stats-bar");
+  if (!query) {
+    const kbank = allRecords.filter(r=>r.bank==="KBANK").length;
+    const scb   = allRecords.filter(r=>r.bank==="SCB").length;
+    const bbl   = allRecords.filter(r=>r.bank==="BBL").length;
+    const bay   = allRecords.filter(r=>r.bank==="BAY").length;
+    bar.innerHTML = `
+      <span>ทั้งหมด <strong>${total.toLocaleString()}</strong> เครื่อง</span>
+      <span>KBANK <strong>${kbank.toLocaleString()}</strong></span>
+      <span>SCB <strong>${scb.toLocaleString()}</strong></span>
+      <span>BBL <strong>${bbl.toLocaleString()}</strong></span>
+      <span>BAY <strong>${bay.toLocaleString()}</strong></span>`;
+  } else {
+    bar.innerHTML = `พบ <strong>${found.toLocaleString()}</strong> รายการ จาก ${total.toLocaleString()} เครื่อง`;
+  }
+}
+
+// ── Events ──
+document.getElementById("search-input").addEventListener("input", e => {
+  render(e.target.value);
+});
+
+document.querySelectorAll(".pill").forEach(pill => {
+  pill.addEventListener("click", () => {
+    activeBank = pill.dataset.bank;
+    document.querySelectorAll(".pill").forEach(p => {
+      p.className = "pill";
+      if (p.dataset.bank === activeBank) {
+        p.className = "pill active-" + activeBank.toLowerCase();
+      }
+    });
+    render(document.getElementById("search-input").value);
+  });
+});
+
+// ── Init ──
+loadData();
+</script>
+</body>
+</html>
