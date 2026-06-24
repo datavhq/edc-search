@@ -24,17 +24,21 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
 #q{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px 12px 44px;font-size:15px;color:var(--text);outline:none;transition:border-color .15s}
 #q::placeholder{color:var(--muted)}#q:focus{border-color:var(--accent)}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.pill{cursor:pointer;border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--muted);transition:all .15s;user-select:none}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.pill{cursor:pointer;border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--muted);transition:all .15s;user-select:none;display:flex;align-items:center;gap:5px}
+.pill .cnt{font-size:10px;opacity:.7}
 .pill.ak{background:var(--kbank-bg);border-color:var(--kbank);color:var(--kbank-t)}
 .pill.aw{background:var(--wom-bg);border-color:var(--wom);color:var(--wom-t)}
 .pill.as{background:var(--scb-bg);border-color:var(--scb);color:var(--scb-t)}
 .pill.ab{background:var(--bbl-bg);border-color:var(--bbl);color:var(--bbl-t)}
 .pill.ay{background:var(--bay-bg);border-color:var(--bay);color:var(--bay-t)}
 .pill.aa{background:var(--accent);border-color:var(--accent);color:#fff}
-.stats{max-width:960px;margin:0 auto;padding:0 20px 10px;font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+.pill.loading{opacity:.5;pointer-events:none}
+.stats{max-width:960px;margin:0 auto;padding:0 20px 10px;font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;min-height:24px}
 .stats strong{color:var(--text)}
 .results{max-width:960px;margin:0 auto;padding:0 20px 40px;display:flex;flex-direction:column;gap:10px}
+/* loading bar */
+.load-bar{height:2px;background:var(--accent);position:fixed;top:0;left:0;transition:width .3s;z-index:999}
 /* Card */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .card-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
@@ -46,28 +50,21 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .b-BAY{background:var(--bay-bg);color:var(--bay-t);border:1px solid var(--bay)}
 .tid-lbl{font-size:15px;font-weight:700;font-family:var(--mono)}
 .mer-lbl{margin-left:auto;font-size:12px;color:var(--muted)}
-/* sections */
 .card-body{padding:12px 16px;display:flex;flex-direction:column;gap:12px}
 .section-title{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px;font-weight:600}
-/* info grid */
 .ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 16px}
 .ii label{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);display:block;margin-bottom:1px}
 .ii span{font-size:12px;font-weight:500;font-family:var(--mono);color:var(--text);word-break:break-all}
 .ii span.e{color:var(--muted);font-family:inherit;font-weight:400;font-style:italic;font-size:11px}
-/* function pills */
 .fn-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 .fn{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px}
 .fn.on{background:rgba(79,124,255,.18);color:#7da4ff;border:1px solid rgba(79,124,255,.3)}
 .fn.off{background:var(--surface2);color:var(--muted);border:1px solid var(--border);text-decoration:line-through;opacity:.5}
-/* hosts table */
 .host-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 12px}
 .hi{display:flex;gap:6px;align-items:baseline;font-size:12px}
 .hi .hk{color:var(--muted);min-width:120px;font-size:11px}
 .hi .hv{font-family:var(--mono);color:var(--text)}
-.hi .hv.dash{color:var(--muted);opacity:.4}
-/* divider */
 hr.d{border:none;border-top:1px solid var(--border)}
-/* empty */
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty .ic{font-size:36px;margin-bottom:10px}
 .empty h3{font-size:15px;color:var(--text);margin-bottom:4px}
@@ -77,6 +74,7 @@ mark{background:rgba(79,124,255,.35);color:var(--text);border-radius:2px;padding
 </style>
 </head>
 <body>
+<div class="load-bar" id="lb" style="width:0%"></div>
 <header>
   <div class="logo">EDC<span>Search</span></div>
   <div class="update-badge" id="ub">กำลังโหลด...</div>
@@ -86,61 +84,91 @@ mark{background:rgba(79,124,255,.35);color:var(--text);border-radius:2px;padding
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" id="q" placeholder="ค้นหา TID, MID, S/N, ชื่อร้าน..." autocomplete="off" spellcheck="false">
   </div>
-  <div class="filters">
-    <div class="pill aa" data-b="ALL">ทั้งหมด</div>
-    <div class="pill" data-b="KBANK">KBANK</div>
-    <div class="pill" data-b="WOM">WOM</div>
-    <div class="pill" data-b="SCB">SCB</div>
-    <div class="pill" data-b="BBL">BBL</div>
-    <div class="pill" data-b="BAY">BAY</div>
+  <div class="filters" id="filters">
+    <div class="pill aa loading" data-b="ALL">ทั้งหมด <span class="cnt" id="cnt-ALL"></span></div>
+    <div class="pill loading" data-b="KBANK">KBANK <span class="cnt" id="cnt-KBANK"></span></div>
+    <div class="pill loading" data-b="WOM">WOM <span class="cnt" id="cnt-WOM"></span></div>
+    <div class="pill loading" data-b="SCB">SCB <span class="cnt" id="cnt-SCB"></span></div>
+    <div class="pill loading" data-b="BBL">BBL <span class="cnt" id="cnt-BBL"></span></div>
+    <div class="pill loading" data-b="BAY">BAY <span class="cnt" id="cnt-BAY"></span></div>
   </div>
 </div>
-<div class="stats" id="stats"></div>
+<div class="stats" id="stats"><span>กำลังโหลดข้อมูล...</span></div>
 <div class="results" id="res">
-  <div class="empty"><div class="ic">🔍</div><h3>พิมพ์เพื่อค้นหา</h3><p>TID · MID · S/N · ชื่อร้าน</p></div>
+  <div class="empty"><div class="ic">⏳</div><h3>กำลังโหลดข้อมูล</h3><p>KBANK · WOM · SCB · BBL · BAY</p></div>
 </div>
-<script>
-let DB=[], bank='ALL';
-const LIMIT=50;
 
-async function load(){
-  try{
-    const r=await fetch('data.json?'+Date.now());
-    const d=await r.json();
-    DB=d.records||[];
-    document.getElementById('ub').textContent='อัพเดท: '+(d.updated||'-');
-    renderStats('');
-  }catch(e){
-    document.getElementById('res').innerHTML='<div class="empty"><div class="ic">⚠️</div><h3>โหลดไม่สำเร็จ</h3><p>ตรวจสอบ data.json</p></div>';
+<script>
+const BANKS = ['KBANK','WOM','SCB','BBL','BAY'];
+const BANK_CLASS = {ALL:'aa',KBANK:'ak',WOM:'aw',SCB:'as',BBL:'ab',BAY:'ay'};
+const LIMIT = 50;
+
+let DB = {}; // {KBANK:[...], WOM:[...], ...}
+let loaded = {};
+let activeBank = 'ALL';
+let lastUpdated = {};
+
+// ── Load per-bank JSON ──
+async function loadBank(bank, idx, total) {
+  try {
+    const r = await fetch(`data_${bank}.json?${Date.now()}`);
+    const d = await r.json();
+    DB[bank] = d.records || [];
+    lastUpdated[bank] = d.updated || '';
+    loaded[bank] = true;
+    // update pill count
+    const cnt = document.getElementById(`cnt-${bank}`);
+    if(cnt) cnt.textContent = `(${DB[bank].length.toLocaleString()})`;
+    document.querySelector(`[data-b="${bank}"]`).classList.remove('loading');
+    // loading bar
+    const done = Object.keys(loaded).length;
+    document.getElementById('lb').style.width = (done/total*100)+'%';
+    // update ALL count
+    const allCount = Object.values(DB).flat().length;
+    const cntAll = document.getElementById('cnt-ALL');
+    if(cntAll) cntAll.textContent = `(${allCount.toLocaleString()})`;
+    document.querySelector('[data-b="ALL"]').classList.remove('loading');
+    // update badge
+    const dates = Object.values(lastUpdated).filter(Boolean);
+    if(dates.length) document.getElementById('ub').textContent = 'อัพเดท: '+dates[0];
+    renderStats();
+    // re-render if user already typed
+    const q = document.getElementById('q').value.trim();
+    if(q) render();
+  } catch(e) {
+    loaded[bank] = false;
+    document.querySelector(`[data-b="${bank}"]`).style.opacity = '0.3';
+    console.warn(`Failed to load ${bank}:`, e);
   }
 }
 
+async function loadAll() {
+  const promises = BANKS.map((b,i) => loadBank(b, i, BANKS.length));
+  await Promise.all(promises);
+  document.getElementById('lb').style.width = '100%';
+  setTimeout(()=>document.getElementById('lb').style.opacity='0', 500);
+  renderStats();
+}
+
+// ── helpers ──
 function hl(t,q){
   if(!q||!t) return t||'';
   return t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`);
 }
-
 function val(v,q){return v?`<span>${hl(v,q)}</span>`:`<span class="e">-</span>`}
-
-function fnTag(label,on){return `<span class="fn ${on?'on':'off'}">${label}</span>`}
+function fn(label,on){return `<span class="fn ${on?'on':'off'}">${label}</span>`}
 
 function hostRows(hosts,q){
-  const entries=Object.entries(hosts).filter(([k,v])=>v&&v!=='-'&&v!=='0');
+  const entries=Object.entries(hosts||{}).filter(([k,v])=>v&&v!=='-'&&v!=='0');
   if(!entries.length) return '<span class="e" style="font-size:12px">ไม่มีข้อมูล</span>';
-  return '<div class="host-grid">'+entries.map(([k,v])=>{
-    const dash=v==='-';
-    return `<div class="hi"><span class="hk">${k}</span><span class="hv ${dash?'dash':''}">${hl(v,q)}</span></div>`;
-  }).join('')+'</div>';
+  return '<div class="host-grid">'+entries.map(([k,v])=>
+    `<div class="hi"><span class="hk">${k}</span><span class="hv">${hl(v,q)}</span></div>`
+  ).join('')+'</div>';
 }
 
 function card(r,q){
-  const isWOM=r.bank==='WOM';
-  const isBAY=r.bank==='BAY';
-  const isBBL=r.bank==='BBL';
-  const isSCB=r.bank==='SCB';
-
-  // ── Info fields ──
-  let infoHtml=`
+  const isWOM=r.bank==='WOM', isBAY=r.bank==='BAY', isBBL=r.bank==='BBL', isSCB=r.bank==='SCB';
+  const infoHtml=`
     <div class="ii"><label>TID</label>${val(r.tid,q)}</div>
     <div class="ii"><label>MID</label>${val(r.mid,q)}</div>
     <div class="ii"><label>S/N</label>${val(r.sn,q)}</div>
@@ -150,83 +178,54 @@ function card(r,q){
     <div class="ii"><label>Model</label>${val(r.model,q)}</div>
     <div class="ii"><label>SW Version</label>${val(r.sw,q)}</div>`;
 
-  // ── Function section ──
   let fnHtml='<div class="fn-row">';
-  fnHtml+=fnTag('Settle: '+(r.settle_mode||'-'), !!r.settle_mode);
-  fnHtml+=fnTag('Time: '+(r.time_settle||'-'), !!r.time_settle);
-  fnHtml+=fnTag('หลักล้าน: '+(r.control_limit||'-'), !!r.control_limit);
-  fnHtml+=fnTag('LinkPOS', r.linkpos);
-  fnHtml+=fnTag('IP: '+(r.ip||'-'), !!r.ip);
-  if(!isBAY&&!isBBL&&!isSCB){
-    fnHtml+=fnTag('APN: '+(r.apn||'-'), !!r.apn);
-  }
-  fnHtml+=fnTag('SIM: '+(r.tel_system||'-'), !!r.tel_system);
+  fnHtml+=fn('Settle: '+(r.settle_mode||'-'), !!r.settle_mode);
+  fnHtml+=fn('Time: '+(r.time_settle||'-'), !!r.time_settle);
+  fnHtml+=fn('หลักล้าน: '+(r.control_limit||'-'), !!r.control_limit);
+  fnHtml+=fn('LinkPOS', r.linkpos);
+  fnHtml+=fn('IP: '+(r.ip||'-'), !!r.ip);
+  fnHtml+=fn('SIM: '+(r.tel_system||'-'), !!r.tel_system);
+  if(!isBAY&&!isBBL&&!isSCB) fnHtml+=fn('APN: '+(r.apn||'-'), !!r.apn);
   fnHtml+='</div>';
 
   let fn2Html='<div class="fn-row">';
-  fn2Html+=fnTag('Keyin', r.keyin);
-  fn2Html+=fnTag('Tip', r.tip);
-  fn2Html+=fnTag('Card Ver', r.cardver);
-  fn2Html+=fnTag('Offline', r.offline);
-  fn2Html+=fnTag('Refund', r.refund);
-  if(!isBAY&&!isBBL&&!isSCB){
-    fn2Html+=fnTag('Flow Wallet: '+(r.flow_wallet||'-'), !!r.flow_wallet);
-  }
-  fn2Html+=fnTag('Multi', r.multi);
-  fn2Html+=fnTag('Dynamic Offline', r.dynamic_offline);
-  if(isWOM && r.lounge!==undefined){
-    fn2Html+=fnTag('Lounge', r.lounge);
-  }
+  fn2Html+=fn('Keyin', r.keyin);
+  fn2Html+=fn('Tip', r.tip);
+  fn2Html+=fn('Card Ver', r.cardver);
+  fn2Html+=fn('Offline', r.offline);
+  fn2Html+=fn('Refund', r.refund);
+  fn2Html+=fn('Multi', r.multi);
+  fn2Html+=fn('Dynamic Offline', r.dynamic_offline);
+  if(!isBAY&&!isBBL&&!isSCB) fn2Html+=fn('Flow: '+(r.flow_wallet||'-'), !!r.flow_wallet);
+  if(isWOM && r.lounge!==undefined) fn2Html+=fn('Lounge', r.lounge);
   fn2Html+='</div>';
-
-  const merchant=r.slip1||r.mid||'';
 
   return `<div class="card">
   <div class="card-head">
     <span class="badge b-${r.bank}">${r.bank}</span>
     <span class="tid-lbl">TID: ${hl(r.tid,q)}</span>
-    <span class="mer-lbl">${hl(merchant,q)}</span>
+    <span class="mer-lbl">${hl(r.slip1||'',q)}</span>
   </div>
   <div class="card-body">
-    <div>
-      <div class="section-title">📋 ข้อมูลเครื่อง</div>
-      <div class="ig">${infoHtml}</div>
-    </div>
+    <div><div class="section-title">📋 ข้อมูลเครื่อง</div><div class="ig">${infoHtml}</div></div>
     <hr class="d">
-    <div>
-      <div class="section-title">⚙️ Network &amp; Settle</div>
-      ${fnHtml}
-    </div>
-    <div>
-      <div class="section-title">🔧 Function</div>
-      ${fn2Html}
-    </div>
+    <div><div class="section-title">⚙️ Network &amp; Settle</div>${fnHtml}</div>
+    <div><div class="section-title">🔧 Function</div>${fn2Html}</div>
     <hr class="d">
-    <div>
-      <div class="section-title">🏦 Host TID / MID ทั้งหมด</div>
-      ${hostRows(r.hosts||{},q)}
-    </div>
+    <div><div class="section-title">🏦 Host TID / MID ทั้งหมด</div>${hostRows(r.hosts,q)}</div>
   </div>
 </div>`;
 }
 
-function renderStats(q){
-  const pool=bank==='ALL'?DB:DB.filter(r=>r.bank===bank);
-  const counts={};
-  DB.forEach(r=>counts[r.bank]=(counts[r.bank]||0)+1);
-  let s=`<span>ทั้งหมด <strong>${DB.length.toLocaleString()}</strong></span>`;
-  ['KBANK','WOM','SCB','BBL','BAY'].forEach(b=>{
-    if(counts[b]) s+=`<span>${b} <strong>${counts[b].toLocaleString()}</strong></span>`;
-  });
-  if(q){const found=filterDB(q).length; s=`พบ <strong>${found.toLocaleString()}</strong> รายการ `+s;}
-  document.getElementById('stats').innerHTML=s;
+function getPool(){
+  if(activeBank==='ALL') return Object.values(DB).flat();
+  return DB[activeBank]||[];
 }
 
 function filterDB(q){
+  if(!q) return [];
   const ql=q.toLowerCase();
-  const pool=bank==='ALL'?DB:DB.filter(r=>r.bank===bank);
-  if(!ql) return [];
-  return pool.filter(r=>
+  return getPool().filter(r=>
     (r.tid&&r.tid.toLowerCase().includes(ql))||
     (r.mid&&r.mid.toLowerCase().includes(ql))||
     (r.sn&&r.sn.toLowerCase().includes(ql))||
@@ -236,6 +235,17 @@ function filterDB(q){
     (r.apn&&r.apn.toLowerCase().includes(ql))||
     Object.values(r.hosts||{}).some(v=>v&&v.toLowerCase().includes(ql))
   );
+}
+
+function renderStats(q){
+  const pool=getPool();
+  let s=`<span>Pool <strong>${pool.length.toLocaleString()}</strong></span>`;
+  BANKS.forEach(b=>{
+    const cnt=(DB[b]||[]).length;
+    if(cnt) s+=`<span>${b} <strong>${cnt.toLocaleString()}</strong></span>`;
+  });
+  if(q){const f=filterDB(q).length; s=`พบ <strong>${f.toLocaleString()}</strong> รายการ | `+s;}
+  document.getElementById('stats').innerHTML=s;
 }
 
 function render(){
@@ -257,20 +267,20 @@ function render(){
   res.innerHTML=html;
 }
 
-document.getElementById('q').addEventListener('input',render);
+document.getElementById('q').addEventListener('input', render);
+
 document.querySelectorAll('.pill').forEach(p=>p.addEventListener('click',()=>{
-  bank=p.dataset.b;
+  if(p.classList.contains('loading')) return;
+  activeBank=p.dataset.b;
   document.querySelectorAll('.pill').forEach(x=>{
-    x.className='pill';
-    if(x.dataset.b===bank){
-      const cls={ALL:'aa',KBANK:'ak',WOM:'aw',SCB:'as',BBL:'ab',BAY:'ay'};
-      x.classList.add(cls[bank]||'aa');
-    }
+    const base=x.classList.contains('loading')?['pill','loading']:['pill'];
+    x.className=base.join(' ');
+    if(x.dataset.b===activeBank) x.classList.add(BANK_CLASS[activeBank]||'aa');
   });
   render();
 }));
 
-load();
+loadAll();
 </script>
 </body>
 </html>

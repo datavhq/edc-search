@@ -1,16 +1,15 @@
 """
-EDC Parameter Config — Excel to JSON Converter
+EDC Parameter Config — Excel to JSON Converter (Multi-file version)
 วิธีใช้:
   1. วางไฟล์ Excel ทุกแบงค์ไว้ในโฟลเดอร์เดียวกับ convert.py
   2. รัน: python convert.py
-  3. จะได้ data.json สำหรับ upload ขึ้น GitHub
+  3. จะได้ไฟล์ data_KBANK.json, data_WOM.json, data_BAY.json, data_BBL.json, data_SCB.json
+  4. Upload ทุกไฟล์ขึ้น GitHub
 """
 
 import json, os, glob
 import pandas as pd
 from datetime import datetime
-
-OUTPUT = "data.json"
 
 def safe(v):
     if v is None: return ""
@@ -25,15 +24,28 @@ def yn(v):
     if v is None: return False
     return str(v).strip().upper() in ("Y","YES","1","TRUE","X","✓")
 
-records = []
+def save(bank, records):
+    updated = datetime.now().strftime("%Y-%m-%d %H:%M")
+    out = {"bank": bank, "updated": updated, "total": len(records), "records": records}
+    fname = f"data_{bank}.json"
+    with open(fname, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, separators=(",",":"))
+    size = os.path.getsize(fname)/1024/1024
+    print(f"  💾 {fname} ({size:.1f} MB)")
+    return fname
+
+print("="*45)
+print("EDC Search — Excel to JSON Converter")
+print("="*45)
 
 # ════════════════════════════════════════
 # KBANK
 # ════════════════════════════════════════
 files = glob.glob("*KBANK*.xlsx")
 if files:
-    print(f"[KBANK] อ่านไฟล์: {files[0]}")
+    print(f"\n[KBANK] อ่านไฟล์: {files[0]}")
     df = pd.read_excel(files[0], dtype=str, sheet_name="ParameterReport")
+    rows = []
     for _, r in df.iterrows():
         tid = safe(r.get("TID",""))
         if not tid or tid == "0": continue
@@ -42,8 +54,8 @@ if files:
             if col.startswith("TID_") or col.startswith("MID_"):
                 v = safe(r.get(col,""))
                 if v and v not in ("0","-"): hosts[col] = v
-        records.append({
-            "bank":"KBANK", "tid":tid,
+        rows.append({
+            "bank":"KBANK","tid":tid,
             "mid":safe(r.get("MID","")),
             "sn":safe(r.get("S/N EDC","")),
             "slip1":safe(r.get("Slip Line_1","")),
@@ -68,17 +80,19 @@ if files:
             "multi":yn(r.get("Multi_mechant","")),
             "hosts":hosts,
         })
-    print(f"  ✓ {len([x for x in records if x['bank']=='KBANK']):,} records")
+    print(f"  ✓ {len(rows):,} records")
+    save("KBANK", rows)
 else:
-    print("[KBANK] ไม่พบไฟล์ *KBANK*.xlsx")
+    print("[KBANK] ไม่พบไฟล์")
 
 # ════════════════════════════════════════
 # WOM
 # ════════════════════════════════════════
 files = glob.glob("*WOM*.xlsx") or glob.glob("*Common_Template*.xlsx")
 if files:
-    print(f"[WOM] อ่านไฟล์: {files[0]}")
+    print(f"\n[WOM] อ่านไฟล์: {files[0]}")
     df = pd.read_excel(files[0], dtype=str)
+    rows = []
     for _, r in df.iterrows():
         tid = safe(r.get("MAIN_TID",""))
         if not tid or tid == "0": continue
@@ -87,8 +101,8 @@ if files:
             if col.startswith("TID_") or col.startswith("MID_"):
                 v = safe(r.get(col,""))
                 if v and v not in ("0","-"): hosts[col] = v
-        records.append({
-            "bank":"WOM", "tid":tid,
+        rows.append({
+            "bank":"WOM","tid":tid,
             "mid":safe(r.get("MAIN_MID","")),
             "sn":safe(r.get("SERIAL_NO","")),
             "slip1":safe(r.get("SLIP_LINE_1","")),
@@ -114,17 +128,19 @@ if files:
             "lounge":yn(r.get("LOUNGE_VISIT","")),
             "hosts":hosts,
         })
-    print(f"  ✓ {len([x for x in records if x['bank']=='WOM']):,} records")
+    print(f"  ✓ {len(rows):,} records")
+    save("WOM", rows)
 else:
-    print("[WOM] ไม่พบไฟล์ *WOM*.xlsx")
+    print("[WOM] ไม่พบไฟล์")
 
 # ════════════════════════════════════════
 # BAY
 # ════════════════════════════════════════
 files = glob.glob("*BAY*.xlsx")
 if files:
-    print(f"[BAY] อ่านไฟล์: {files[0]}")
+    print(f"\n[BAY] อ่านไฟล์: {files[0]}")
     df = pd.read_excel(files[0], dtype=str)
+    rows = []
     for _, r in df.iterrows():
         tid = safe(r.get("TIDหลัก",""))
         if not tid or tid == "0": continue
@@ -137,8 +153,8 @@ if files:
                     acq = safe(r.get(acol,""))
                     key = f"{acq}/{col}" if acq else col
                     hosts[key] = v
-        records.append({
-            "bank":"BAY", "tid":tid,
+        rows.append({
+            "bank":"BAY","tid":tid,
             "mid":safe(r.get("MID_ACQUIRER1","")),
             "sn":safe(r.get("serialNumber","")),
             "slip1":safe(r.get("SLIP1","")),
@@ -147,9 +163,7 @@ if files:
             "model":safe(r.get("PROFILE","")),
             "sw":"",
             "ip":safe(r.get("IP ทำรายการ Primary","")),
-            "tel_system":"",
-            "apn":"", "flow_wallet":"",
-            "settle_mode":"",
+            "tel_system":"","apn":"","flow_wallet":"","settle_mode":"",
             "time_settle":safe(r.get("AUTO SETTLEMENT TIME","")),
             "control_limit":"",
             "linkpos":yn(r.get("LINK POS","")),
@@ -157,21 +171,23 @@ if files:
             "tip":yn(r.get("ADJUST","")),
             "offline":yn(r.get("OFFLINE","")),
             "refund":yn(r.get("REFUND","")),
-            "cardver":False, "dynamic_offline":False,
+            "cardver":False,"dynamic_offline":False,
             "multi":yn(r.get("MULTI-MERCHANT","")),
             "hosts":hosts,
         })
-    print(f"  ✓ {len([x for x in records if x['bank']=='BAY']):,} records")
+    print(f"  ✓ {len(rows):,} records")
+    save("BAY", rows)
 else:
-    print("[BAY] ไม่พบไฟล์ *BAY*.xlsx")
+    print("[BAY] ไม่พบไฟล์")
 
 # ════════════════════════════════════════
 # BBL
 # ════════════════════════════════════════
 files = glob.glob("*BBL*.xlsx")
 if files:
-    print(f"[BBL] อ่านไฟล์: {files[0]}")
+    print(f"\n[BBL] อ่านไฟล์: {files[0]}")
     df = pd.read_excel(files[0], dtype=str)
+    rows = []
     for _, r in df.iterrows():
         tid = safe(r.get("Terminal ID",""))
         if not tid or tid == "0": continue
@@ -180,16 +196,15 @@ if files:
                     "TID-REDEMPTION","MID-REDEMPTION","TID.QR REF1 (TID)","TID_ALIPAY + WECHAT","TID BSS","MID BSS"]:
             v = safe(r.get(col,""))
             if v and v not in ("0","-"): hosts[col] = v
-        records.append({
-            "bank":"BBL", "tid":tid,
+        rows.append({
+            "bank":"BBL","tid":tid,
             "mid":safe(r.get("BBL MID","")),
             "sn":safe(r.get("Serial No.","")),
             "slip1":safe(r.get("LINE 1","")),
             "slip2":safe(r.get("LINE 2","")),
             "slip3":safe(r.get("LINE 3","")),
             "model":safe(r.get("Model","")),
-            "sw":"",
-            "ip":"", "tel_system":"", "apn":"", "flow_wallet":"",
+            "sw":"","ip":"","tel_system":"","apn":"","flow_wallet":"",
             "settle_mode":safe(r.get("Force Settlement","")),
             "time_settle":safe(r.get("Auto Settlement","")),
             "control_limit":safe(r.get("Transaction Limit","")),
@@ -203,17 +218,19 @@ if files:
             "multi":yn(r.get("MULTI","")),
             "hosts":hosts,
         })
-    print(f"  ✓ {len([x for x in records if x['bank']=='BBL']):,} records")
+    print(f"  ✓ {len(rows):,} records")
+    save("BBL", rows)
 else:
-    print("[BBL] ไม่พบไฟล์ *BBL*.xlsx")
+    print("[BBL] ไม่พบไฟล์")
 
 # ════════════════════════════════════════
 # SCB
 # ════════════════════════════════════════
 files = glob.glob("*SCB*.xlsx")
 if files:
-    print(f"[SCB] อ่านไฟล์: {files[0]}")
+    print(f"\n[SCB] อ่านไฟล์: {files[0]}")
     df = pd.read_excel(files[0], dtype=str)
+    rows = []
     for _, r in df.iterrows():
         tid = safe(r.get("HOST.1/TERMINAL_ID",""))
         if not tid or tid == "0": continue
@@ -225,8 +242,8 @@ if files:
             if t and t not in ("0","-"): hosts[f"HOST.{i} TID"] = t
             if m and m not in ("0","-"): hosts[f"HOST.{i} MID"] = m
             if qn: hosts[f"HOST.{i} QR_NAME"] = qn
-        records.append({
-            "bank":"SCB", "tid":tid,
+        rows.append({
+            "bank":"SCB","tid":tid,
             "mid":safe(r.get("HOST.1/MERCHANT_ID","")),
             "sn":safe(r.get("serialNumber","")),
             "slip1":safe(r.get("PRINT_CONFIG.1/HEADER1","")),
@@ -236,7 +253,7 @@ if files:
             "sw":"",
             "ip":safe(r.get("CONNECTION.1/PRIMARY_IP","")),
             "tel_system":safe(r.get("HOST.1/ACTIVE_MEDIA","")),
-            "apn":"", "flow_wallet":"",
+            "apn":"","flow_wallet":"",
             "settle_mode":safe(r.get("HOST.1/ENABLE_AUTO_SETTLEMENT","")),
             "time_settle":safe(r.get("HOST.1/AUTO_SETTLE_TIME","")),
             "control_limit":safe(r.get("TERMINAL/MAX_TRANS_AMOUNT","")),
@@ -245,28 +262,19 @@ if files:
             "tip":yn(r.get("TERMINAL/ALLOW_TIP","")),
             "offline":False,
             "refund":yn(r.get("MERCHANT.1/ALLOW_CARD_REFUND","")),
-            "cardver":False,
-            "dynamic_offline":False,
+            "cardver":False,"dynamic_offline":False,
             "multi":yn(r.get("TERMINAL/ENABLE_MULTI_MERCHANT","")),
             "hosts":hosts,
         })
-    print(f"  ✓ {len([x for x in records if x['bank']=='SCB']):,} records")
+    print(f"  ✓ {len(rows):,} records")
+    save("SCB", rows)
 else:
-    print("[SCB] ไม่พบไฟล์ *SCB*.xlsx")
+    print("[SCB] ไม่พบไฟล์")
 
-# ════════════════════════════════════════
-# บันทึก data.json
-# ════════════════════════════════════════
-out = {
-    "updated": datetime.now().strftime("%Y-%m-%d %H:%M"),
-    "total": len(records),
-    "records": records
-}
-with open(OUTPUT, "w", encoding="utf-8") as f:
-    json.dump(out, f, ensure_ascii=False, separators=(",",":"))
-
-size = os.path.getsize(OUTPUT)/1024/1024
-print(f"\n{'='*40}")
-print(f"✅ เสร็จแล้ว! {len(records):,} records → {OUTPUT} ({size:.1f} MB)")
-print(f"   อัพเดท: {out['updated']}")
-print(f"{'='*40}")
+print("\n" + "="*45)
+print("✅ เสร็จแล้ว! Upload ไฟล์เหล่านี้ขึ้น GitHub:")
+for b in ["KBANK","WOM","BAY","BBL","SCB"]:
+    f = f"data_{b}.json"
+    if os.path.exists(f):
+        print(f"  📄 {f} ({os.path.getsize(f)/1024/1024:.1f} MB)")
+print("="*45)
