@@ -194,17 +194,12 @@ function card(r,q){
   fnH+=fn('Pre-Auth', r.preauth);
   fnH+=fn('Offline', r.offline);
   fnH+=fn('Refund', r.refund);
-  // BBL biller
-  if(r.biller_id||r.biller_name){
+  // biller — แสดงครั้งเดียว รวม BBL และ SCB
+  const hasBiller = r.biller_name||r.biller_id||r.biller_id_ref1||r.biller_id_ref2;
+  if(hasBiller){
     fnH+=`<div style="width:100%;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">`;
     if(r.biller_name) fnH+=`<span class="fn on">Biller Name: ${hl(r.biller_name,q)}</span>`;
     if(r.biller_id) fnH+=`<span class="fn on">Biller ID: ${hl(r.biller_id,q)}</span>`;
-    fnH+=`</div>`;
-  }
-  // SCB biller
-  if(r.biller_name||r.biller_id_ref1||r.biller_id_ref2){
-    fnH+=`<div style="width:100%;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">`;
-    if(r.biller_name) fnH+=`<span class="fn on">Biller Name: ${hl(r.biller_name,q)}</span>`;
     if(r.biller_id_ref1) fnH+=`<span class="fn on">Biller ID REF1: ${hl(r.biller_id_ref1,q)}</span>`;
     if(r.biller_id_ref2) fnH+=`<span class="fn on">Biller ID REF2: ${hl(r.biller_id_ref2,q)}</span>`;
     fnH+=`</div>`;
