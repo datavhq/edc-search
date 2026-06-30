@@ -96,6 +96,9 @@ body{background:#f0f4fa;font-size:14px}
 .g-kbank-main .gh{background:#f0fdf4;border-color:#dcfce7}.g-kbank-main .glbl{color:#08a818}.g-kbank-main .gbody{background:#f0fdf4}.g-kbank-main{border-color:#86efac}
 .g-scb-main .gh{background:#f5f3ff;border-color:#ede9fe}.g-scb-main .glbl{color:#6308a8}.g-scb-main .gbody{background:#f5f3ff}.g-scb-main{border-color:#c4b5fd}
 .g-wom .gh{background:#f0fdf4;border-color:#dcfce7}.g-wom .glbl{color:#08a818}.g-wom .gbody{background:#f0fdf4}.g-wom{border-color:#86efac}
+.g-uob .gh{background:#fef2f2;border-color:#fecaca}.g-uob .glbl{color:#991b1b}.g-uob .gbody{background:#fef2f2}.g-uob{border-color:#f87171}
+.g-ttb .gh{background:#fff7ed;border-color:#fed7aa}.g-ttb .glbl{color:#c2410c}.g-ttb .gbody{background:#fff7ed}.g-ttb{border-color:#fb923c}
+.g-aycap .gh{background:#fefce8;border-color:#fde047}.g-aycap .glbl{color:#854d0e}.g-aycap .gbody{background:#fefce8}.g-aycap{border-color:#fbbf24}
 .empty{text-align:center;padding:36px 20px;color:#aac0d8}
 .empty i{font-size:30px;display:block;margin-bottom:8px;color:#dce8f5}
 @media(max-width:600px){.ig,.ig-slips{grid-template-columns:1fr 1fr}.shop-name{display:none}.stats{grid-template-columns:repeat(3,1fr)}.gbody{grid-template-columns:1fr 1fr}}
@@ -169,7 +172,21 @@ function groupHosts(bank, hosts){
   }
 
   if(bank==='KBANK'||bank==='WOM'){
-    return [{key:'kbank-main',label:bank,cls:'g-kbank-main',hosts}];
+    // KBANK/WOM มี host ของแบงค์อื่นปนอยู่ — ต้องแยกตามชื่อ
+    const scbN = n=>/SCB/i.test(n);
+    const bblN = n=>/BBL/i.test(n);
+    const uobN = n=>/UOB/i.test(n);
+    const ttbN = n=>/TTB/i.test(n);
+    const aycapN = n=>/AYCAP/i.test(n);
+    const groups=[
+      {key:'kbank-main',label:bank,cls:'g-kbank-main',hosts:hosts.filter(h=>!scbN(h.name)&&!bblN(h.name)&&!uobN(h.name)&&!ttbN(h.name)&&!aycapN(h.name))},
+      {key:'scb',label:'SCB',cls:'g-scb',hosts:hosts.filter(h=>scbN(h.name))},
+      {key:'bbl',label:'BBL',cls:'g-bbl',hosts:hosts.filter(h=>bblN(h.name))},
+      {key:'uob',label:'UOB',cls:'g-uob',hosts:hosts.filter(h=>uobN(h.name))},
+      {key:'ttb',label:'TTB',cls:'g-ttb',hosts:hosts.filter(h=>ttbN(h.name))},
+      {key:'aycap',label:'AYCAP',cls:'g-aycap',hosts:hosts.filter(h=>aycapN(h.name))},
+    ];
+    return groups.filter(g=>g.hosts.length>0);
   }
   if(bank==='SCB'){
     return [{key:'scb-main',label:'SCB',cls:'g-scb-main',hosts}];
@@ -185,7 +202,8 @@ function groupHosts(bank, hosts){
 const HN_COLOR={
   'g-bay':'#9a8a00','g-scb':'#6308a8','g-kbank':'#08a818',
   'g-ktc':'#6d28d9','g-bbl':'#064e91','g-kbank-main':'#08a818',
-  'g-scb-main':'#6308a8','g-wom':'#08a818'
+  'g-scb-main':'#6308a8','g-wom':'#08a818',
+  'g-uob':'#991b1b','g-ttb':'#c2410c','g-aycap':'#854d0e'
 };
 
 function hostGroupsHTML(bank, hosts, q){
