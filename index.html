@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TermPoint — EDC Terminal Lookup</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/tabler-icons.min.css">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body,input,button,select,textarea{font-family:'Poppins',system-ui,sans-serif!important}
 body{background:#f0f4fa;font-size:14px}
-
-/* NAV */
 .nav{background:linear-gradient(135deg,#0d2580,#1a4fc4,#2a7aee);padding:11px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
 .nav-icon{width:33px;height:33px;background:#f97316;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nav-brand{font-size:15px;font-weight:600;color:#fff;letter-spacing:-.2px}
@@ -19,8 +18,6 @@ body{background:#f0f4fa;font-size:14px}
 .nav-r{margin-left:auto;display:flex;align-items:center;gap:6px}
 .ndot{width:7px;height:7px;background:#4ade80;border-radius:50%}
 .npill{font-size:11px;color:#bfdbfe;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px}
-
-/* HERO */
 .hero{background:linear-gradient(160deg,#0d2580 0%,#1a4fc4 55%,#2a7aee 100%);padding:28px 20px 20px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.04);top:-80px;right:-50px;pointer-events:none}
 .hero::after{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);bottom:-60px;left:-40px;pointer-events:none}
@@ -32,28 +29,22 @@ body{background:#f0f4fa;font-size:14px}
 .hsub{font-size:12px;color:#93c5fd;margin-bottom:18px}
 .so{max-width:520px;margin:0 auto;position:relative;z-index:2}
 .sbox{background:#fff;border:2px solid #f97316;border-radius:10px;display:flex;align-items:center;padding:0 10px;height:44px;gap:8px}
-.sbox input{border:none;outline:none;flex:1;font-size:14px;color:#0d2580;background:transparent;font-family:'Poppins',system-ui,sans-serif}
+.sbox input{border:none;outline:none;flex:1;font-size:14px;color:#0d2580;background:transparent;font-family:'Poppins',system-ui,sans-serif!important}
 .sbox input::placeholder{color:#aac0d8}
-.sbtn{background:#f97316;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Poppins',system-ui,sans-serif;white-space:nowrap}
+.sbtn{background:#f97316;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:'Poppins',system-ui,sans-serif!important}
 .sbtn:hover{background:#ea6a0a}
 .pills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px;position:relative;z-index:2}
 .pill{border-radius:20px;padding:5px 16px;font-size:12px;font-weight:500;border:1px solid rgba(255,255,255,.25);color:#bfdbfe;background:rgba(255,255,255,.1);cursor:pointer;transition:all .15s;user-select:none}
 .pill:hover{background:rgba(255,255,255,.18)}
 .pill.act{background:#f97316;border-color:#f97316;color:#fff}
-
-/* STATS */
 .stats{background:#fff;border-bottom:.5px solid #dce8f5;display:grid;grid-template-columns:repeat(6,1fr)}
 .stat{padding:9px 6px;text-align:center;border-right:.5px solid #dce8f5}
 .stat:last-child{border-right:none}
 .sn{font-size:14px;font-weight:600;letter-spacing:-.3px}
-.sl{font-size:10px;color:#aac0d8;margin-top:1px;font-weight:400}
-
-/* RESULTS */
+.sl{font-size:10px;color:#aac0d8;margin-top:1px}
 .res{padding:14px 16px;background:#f0f4fa;min-height:180px;max-width:1000px;margin:0 auto}
-.rc{font-size:12px;color:#8aaac8;margin-bottom:10px;font-weight:400}
+.rc{font-size:12px;color:#8aaac8;margin-bottom:10px}
 .limit-note{text-align:center;padding:12px;color:#8aaac8;font-size:12px;background:#fff;border-radius:8px;border:.5px solid #dce8f5;margin-top:8px}
-
-/* CARD */
 .card{background:#fff;border:1px solid #dce8f5;border-radius:14px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 16px rgba(26,79,196,.07)}
 .ch{background:linear-gradient(135deg,#0d2580,#1a4fc4,#2a7aee);padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .bk{font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px;letter-spacing:.3px}
@@ -64,80 +55,61 @@ body{background:#f0f4fa;font-size:14px}
 .bk-BAY{background:#c9ba2e;color:#fff}
 .bk-KP{background:#f97316;color:#fff}
 .tid-wrap{display:flex;align-items:center;gap:5px}
-.tid-lbl{font-size:12px;color:rgba(255,255,255,.5);font-weight:400}
-.tid-val{font-size:14px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#fff}
-.shop-name{margin-left:auto;font-size:12px;color:#7dd4ff;font-weight:400;text-transform:uppercase;letter-spacing:.2px}
-
-/* CARD BODY */
+.tid-lbl{font-size:12px;color:rgba(255,255,255,.5)}
+.tid-val{font-size:14px;font-weight:600;color:#fff}
+.shop-name{margin-left:auto;font-size:12px;color:#7dd4ff;text-transform:uppercase;letter-spacing:.2px}
 .cb{background:#fff}
 .sec{padding:12px 14px;border-bottom:1px solid #eef2f8}
 .sec:last-child{border-bottom:none}
 .seclbl{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#8aaac8;margin-bottom:8px;display:flex;align-items:center;gap:5px;font-weight:600}
 .seclbl i{color:#f97316;font-size:13px}
-
-/* INFO GRID */
-.ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px 14px}
+/* info — แยก slip เป็นบรรทัดใหม่ */
+.ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px 14px}
+.ig-slips{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px 14px;margin-top:8px;padding-top:8px;border-top:.5px solid #eef2f8}
 .ii label{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:#aac0d8;display:block;margin-bottom:2px;font-weight:500}
-.ii .vorg{font-size:12px;font-family:'JetBrains Mono',monospace;color:#f97316;font-weight:600}
-.ii .vblue{font-size:12px;font-family:'JetBrains Mono',monospace;color:#1a4fc4;font-weight:500}
-.ii .ve{font-size:11px;color:#aac0d8;font-style:italic}
-
-/* TAGS */
+.vorg{font-size:12px;color:#f97316;font-weight:600}
+.vblue{font-size:12px;color:#1a4fc4;font-weight:500}
+.ve{font-size:11px;color:#aac0d8;font-style:italic}
 .tags{display:flex;flex-wrap:wrap;gap:5px}
 .ton{background:#eff6ff;color:#1a4fc4;font-size:11px;padding:2px 9px;border-radius:4px;border:.5px solid #bfdbfe;font-weight:500}
 .tof{background:#fff7ed;color:#c2410c;font-size:11px;padding:2px 9px;border-radius:4px;border:.5px solid #fed7aa;font-weight:500}
 .tno{background:#f8fafc;color:#c8d8e8;font-size:11px;padding:2px 9px;border-radius:4px;border:.5px solid #eef2f8;text-decoration:line-through}
 .biller-row{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
-
 /* HOST GROUPS */
 .gw{display:flex;flex-direction:column;gap:7px}
 .grp{border-radius:10px;overflow:hidden;border:1px solid #dce8f5}
-.gh{padding:7px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #dce8f5;background:#f5f8fc}
-.glbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#1a4fc4}
-.gcnt{font-size:10px;color:#aac0d8;margin-left:auto;font-weight:400}
-.gbody{padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;background:#f5f8fc}
+.gh{padding:7px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #dce8f5}
+.glbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.gcnt{font-size:10px;color:#aac0d8;margin-left:auto}
+.gbody{padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
 .hbox{background:#fff;border:1px solid #dce8f5;border-radius:8px;padding:8px 10px}
-.hn{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;color:#1a4fc4}
+.hn{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .hr{font-size:11px;color:#aac0d8;line-height:1.7}
-.hr b{font-family:'JetBrains Mono',monospace;color:#07328a;font-weight:500}
+.hr b{color:#07328a;font-weight:500}
 .hr b.org{color:#f97316}
-
-.grp-bay{border-color:#d4c94e}.gh-bay{background:#fefde8;border-color:#f3e87d}.glbl-bay{color:#9a8a00}
-.grp-scb{border-color:#c4b5fd}.gh-scb{background:#f5f3ff;border-color:#ede9fe}.glbl-scb{color:#6308a8}
-.grp-kbank{border-color:#86efac}.gh-kbank{background:#f0fdf4;border-color:#dcfce7}.glbl-kbank{color:#08a818}
-.grp-ktc{border-color:#c4b5fd}.gh-ktc{background:#faf5ff;border-color:#f5f3ff}.glbl-ktc{color:#6d28d9}
-.grp-kp{border-color:#fed7aa}.gh-kp{background:#fff7ed;border-color:#fed7aa}.glbl-kp{color:#c2410c}
-.grp-bbl{border-color:#93c5fd}.gh-bbl{background:#eff6ff;border-color:#dbeafe}.glbl-bbl{color:#064e91}
-
-/* EMPTY */
+/* group themes */
+.g-bay .gh{background:#fefde8;border-color:#f3e87d}.g-bay .glbl{color:#9a8a00}.g-bay .gbody{background:#fefde8}.g-bay{border-color:#d4c94e}
+.g-scb .gh{background:#f5f3ff;border-color:#ede9fe}.g-scb .glbl{color:#6308a8}.g-scb .gbody{background:#f5f3ff}.g-scb{border-color:#c4b5fd}
+.g-kbank .gh{background:#f0fdf4;border-color:#dcfce7}.g-kbank .glbl{color:#08a818}.g-kbank .gbody{background:#f0fdf4}.g-kbank{border-color:#86efac}
+.g-ktc .gh{background:#faf5ff;border-color:#f5f3ff}.g-ktc .glbl{color:#6d28d9}.g-ktc .gbody{background:#faf5ff}.g-ktc{border-color:#c4b5fd}
+.g-bbl .gh{background:#eff6ff;border-color:#dbeafe}.g-bbl .glbl{color:#064e91}.g-bbl .gbody{background:#eff6ff}.g-bbl{border-color:#93c5fd}
+.g-kbank-main .gh{background:#f0fdf4;border-color:#dcfce7}.g-kbank-main .glbl{color:#08a818}.g-kbank-main .gbody{background:#f0fdf4}.g-kbank-main{border-color:#86efac}
+.g-scb-main .gh{background:#f5f3ff;border-color:#ede9fe}.g-scb-main .glbl{color:#6308a8}.g-scb-main .gbody{background:#f5f3ff}.g-scb-main{border-color:#c4b5fd}
+.g-wom .gh{background:#f0fdf4;border-color:#dcfce7}.g-wom .glbl{color:#08a818}.g-wom .gbody{background:#f0fdf4}.g-wom{border-color:#86efac}
 .empty{text-align:center;padding:36px 20px;color:#aac0d8}
 .empty i{font-size:30px;display:block;margin-bottom:8px;color:#dce8f5}
-
-/* RESPONSIVE */
-@media(max-width:600px){
-  .ig{grid-template-columns:1fr 1fr}
-  .shop-name{display:none}
-  .stats{grid-template-columns:repeat(3,1fr)}
-  .stat:nth-child(3){border-right:none}
-  .stat:nth-child(4){border-top:.5px solid #dce8f5}
-  .gbody{grid-template-columns:1fr 1fr}
-}
+@media(max-width:600px){.ig,.ig-slips{grid-template-columns:1fr 1fr}.shop-name{display:none}.stats{grid-template-columns:repeat(3,1fr)}.gbody{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-
 <nav class="nav">
   <div class="nav-icon"><i class="ti ti-device-laptop" style="color:#fff;font-size:17px"></i></div>
-  <div>
-    <div class="nav-brand">Term<span>Point</span></div>
-    <div class="nav-sub">EDC Terminal Lookup</div>
-  </div>
+  <div><div class="nav-brand">Term<span>Point</span></div><div class="nav-sub">EDC Terminal Lookup</div></div>
   <div class="nav-r">
     <div class="npill"><div class="ndot"></div>online</div>
     <div class="npill" id="clk"></div>
   </div>
 </nav>
-
 <div class="hero">
   <div class="eye">Terminal Knowledge Platform</div>
   <div class="h1">Find Any <em>Terminal.</em></div>
@@ -159,8 +131,7 @@ body{background:#f0f4fa;font-size:14px}
     <div class="pill" data-b="BAY">BAY</div>
   </div>
 </div>
-
-<div class="stats" id="stats-bar">
+<div class="stats">
   <div class="stat"><div class="sn" style="color:#1a4fc4" id="cnt-ALL">—</div><div class="sl">Total</div></div>
   <div class="stat"><div class="sn" style="color:#08a818" id="cnt-KBANK">—</div><div class="sl">KBANK</div></div>
   <div class="stat"><div class="sn" style="color:#08a818" id="cnt-WOM">—</div><div class="sl">WOM</div></div>
@@ -168,121 +139,110 @@ body{background:#f0f4fa;font-size:14px}
   <div class="stat"><div class="sn" style="color:#064e91" id="cnt-BBL">—</div><div class="sl">BBL</div></div>
   <div class="stat"><div class="sn" style="color:#c9ba2e" id="cnt-BAY">—</div><div class="sl">BAY</div></div>
 </div>
-
-<div class="res" id="res">
-  <div class="empty"><i class="ti ti-search"></i></div>
-</div>
+<div class="res" id="res"><div class="empty"><i class="ti ti-search"></i></div></div>
 
 <script>
-const BANKS = ['KBANK','WOM','SCB','BBL','BAY'];
-const LIMIT = 50;
-let DB = {}, loaded = {}, activeBank = 'ALL';
+const BANKS=['KBANK','WOM','SCB','BBL','BAY'];
+const LIMIT=50;
+let DB={},activeBank='ALL';
 
-const GMAP = {
-  bay:  {cls:'grp-bay',  hcls:'gh-bay',   lcls:'glbl-bay',   lbl:'BAY Payment'},
-  scb:  {cls:'grp-scb',  hcls:'gh-scb',   lcls:'glbl-scb',   lbl:'SCB'},
-  kbank:{cls:'grp-kbank',hcls:'gh-kbank', lcls:'glbl-kbank', lbl:'KBANK'},
-  ktc:  {cls:'grp-ktc',  hcls:'gh-ktc',   lcls:'glbl-ktc',   lbl:'KTC'},
-  kp:   {cls:'grp-kp',   hcls:'gh-kp',    lcls:'glbl-kp',    lbl:'King Power'},
-  bbl:  {cls:'grp-bbl',  hcls:'gh-bbl',   lcls:'glbl-bbl',   lbl:'BBL Payment'},
-};
+// ── Host grouping สำหรับแต่ละ bank ──
+// กำหนดว่า host name ไหนอยู่ใน group ไหน
+// return [{key, label, cls, hosts:[]}]
+function groupHosts(bank, hosts){
+  if(!hosts||!hosts.length) return [];
 
-// ── Load data ──
-async function loadBank(b) {
-  try {
-    const r = await fetch(`data_${b}.json?` + Date.now());
-    const d = await r.json();
-    DB[b] = d.records || [];
-    loaded[b] = true;
-    updateCounts();
-    const q = document.getElementById('qi').value.trim();
-    if (q) render();
-  } catch(e) { console.warn(b, e); }
+  if(bank==='BAY'){
+    // SCB group: IPP-SCB, OLS-SCB, ARKE*
+    const scbNames = n=>n.includes('SCB')||n.includes('ARKE');
+    // KBANK group: IPP-KBANK, OLS-KBANK, KBANK*
+    const kbankNames = n=>n.includes('KBANK');
+    // KTC group
+    const ktcNames = n=>n.includes('KTC');
+    const groups=[
+      {key:'bay',  label:'BAY Payment', cls:'g-bay',   hosts:hosts.filter(h=>!scbNames(h.name)&&!kbankNames(h.name)&&!ktcNames(h.name))},
+      {key:'scb',  label:'SCB',         cls:'g-scb',   hosts:hosts.filter(h=>scbNames(h.name))},
+      {key:'kbank',label:'KBANK',        cls:'g-kbank', hosts:hosts.filter(h=>kbankNames(h.name))},
+      {key:'ktc',  label:'KTC',          cls:'g-ktc',   hosts:hosts.filter(h=>ktcNames(h.name))},
+    ];
+    return groups.filter(g=>g.hosts.length>0);
+  }
+
+  if(bank==='KBANK'||bank==='WOM'){
+    return [{key:'kbank-main',label:bank,cls:'g-kbank-main',hosts}];
+  }
+  if(bank==='SCB'){
+    return [{key:'scb-main',label:'SCB',cls:'g-scb-main',hosts}];
+  }
+  if(bank==='BBL'){
+    return [{key:'bbl',label:'BBL',cls:'g-bbl',hosts}];
+  }
+  // fallback
+  return [{key:bank.toLowerCase(),label:bank,cls:'g-bay',hosts}];
 }
 
-function updateCounts() {
-  const total = Object.values(DB).flat().length;
-  document.getElementById('cnt-ALL').textContent = total.toLocaleString();
-  BANKS.forEach(b => {
-    const el = document.getElementById(`cnt-${b}`);
-    if (el && DB[b]) el.textContent = DB[b].length.toLocaleString();
-  });
+// Group label สี
+const HN_COLOR={
+  'g-bay':'#9a8a00','g-scb':'#6308a8','g-kbank':'#08a818',
+  'g-ktc':'#6d28d9','g-bbl':'#064e91','g-kbank-main':'#08a818',
+  'g-scb-main':'#6308a8','g-wom':'#08a818'
+};
+
+function hostGroupsHTML(bank, hosts, q){
+  const groups = groupHosts(bank, hosts);
+  if(!groups.length) return '<span style="color:#aac0d8;font-size:12px">ไม่มีข้อมูล</span>';
+  return '<div class="gw">'+groups.map(g=>`
+<div class="grp ${g.cls}">
+  <div class="gh ${g.cls}">
+    <i class="ti ti-building-bank" style="font-size:12px;color:#aac0d8"></i>
+    <span class="glbl" style="color:${HN_COLOR[g.cls]||'#1a4fc4'}">${g.label}</span>
+    <span class="gcnt">${g.hosts.length} host${g.hosts.length>1?'s':''}</span>
+  </div>
+  <div class="gbody ${g.cls}">
+    ${g.hosts.map(h=>`<div class="hbox">
+      <div class="hn" style="color:${HN_COLOR[g.cls]||'#1a4fc4'}">${h.name}</div>
+      <div class="hr">TID <b class="${h.is_main?'org':''}">${h.tid||'—'}</b></div>
+      ${h.mid?`<div class="hr">MID <b>${h.mid}</b></div>`:''}
+    </div>`).join('')}
+  </div>
+</div>`).join('')+'</div>';
 }
 
 // ── Helpers ──
-function hl(t, q) {
-  if (!q || !t) return t || '';
-  return t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m => `<mark style="background:rgba(249,115,22,.2);color:#c2410c;border-radius:2px">${m}</mark>`);
+function hl(t,q){
+  if(!q||!t) return t||'';
+  return t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark style="background:rgba(249,115,22,.2);color:#c2410c;border-radius:2px;padding:0 1px">${m}</mark>`);
 }
-function fn(lbl, on) { return `<span class="${on?'tof':'tno'}">${lbl}</span>`; }
-function v(val, q, cls='vblue') { return val ? `<span class="${cls}">${hl(val,q)}</span>` : `<span class="ve">—</span>`; }
+function fn(lbl,on){return `<span class="${on?'tof':'tno'}">${lbl}</span>`}
+function vv(val,q,cls){return val?`<span class="${cls}">${hl(String(val),q)}</span>`:`<span class="ve">—</span>`}
 
-function hostGroups(groups) {
-  if (!groups || !groups.length) return '<span style="color:#aac0d8;font-size:12px">ไม่มีข้อมูล</span>';
-  return '<div class="gw">' + groups.map(g => {
-    const m = GMAP[g.key] || GMAP.bay;
-    return `<div class="grp ${m.cls}">
-<div class="gh ${m.hcls}">
-  <i class="ti ti-building-bank" style="font-size:12px;color:#aac0d8"></i>
-  <span class="glbl ${m.lcls}">${m.lbl}</span>
-  <span class="gcnt">${g.hosts.length} hosts</span>
-</div>
-<div class="gbody">${g.hosts.map(h => `<div class="hbox">
-  <div class="hn">${h.name}</div>
-  <div class="hr">TID <b class="${h.is_main?'org':''}">${h.tid||'—'}</b></div>
-  ${h.mid ? `<div class="hr">MID <b>${h.mid}</b></div>` : ''}
-</div>`).join('')}</div>
-</div>`;
-  }).join('') + '</div>';
-}
-
-function buildHostGroups(r) {
-  // group hosts by their 'group' field
-  const groups = {};
-  const order = [];
-  (r.hosts || []).forEach(h => {
-    const g = h.group || 'bay';
-    if (!groups[g]) { groups[g] = []; order.push(g); }
-    groups[g].push(h);
-  });
-  return order.map(k => ({ key: k, hosts: groups[k] }));
-}
-
-function card(r, q) {
-  const hg = r.host_groups || buildHostGroups(r);
-  const isMain = r.tid;
-
-  const billerRow = (r.biller_name || r.biller_id || r.biller_id_ref1 || r.biller_id_ref2)
-    ? `<div class="biller-row">
-        ${r.biller_name ? `<span class="tof">Biller Name: ${hl(r.biller_name,q)}</span>` : ''}
-        ${r.biller_id ? `<span class="tof">Biller ID: ${hl(r.biller_id,q)}</span>` : ''}
-        ${r.biller_id_ref1 ? `<span class="tof">Biller ID REF1: ${hl(r.biller_id_ref1,q)}</span>` : ''}
-        ${r.biller_id_ref2 ? `<span class="tof">Biller ID REF2: ${hl(r.biller_id_ref2,q)}</span>` : ''}
-      </div>` : '';
+function card(r,q){
+  const slips=[r.slip1,r.slip2,r.slip3,r.slip4].filter(Boolean);
+  const billerRow=(r.biller_name||r.biller_id||r.biller_id_ref1||r.biller_id_ref2)?`
+    <div class="biller-row">
+      ${r.biller_name?`<span class="tof">Biller Name: ${hl(r.biller_name,q)}</span>`:''}
+      ${r.biller_id?`<span class="tof">Biller ID: ${hl(r.biller_id,q)}</span>`:''}
+      ${r.biller_id_ref1?`<span class="tof">Biller ID REF1: ${hl(r.biller_id_ref1,q)}</span>`:''}
+      ${r.biller_id_ref2?`<span class="tof">Biller ID REF2: ${hl(r.biller_id_ref2,q)}</span>`:''}
+    </div>`:'';
 
   return `<div class="card">
 <div class="ch">
   <span class="bk bk-${r.bank}">${r.bank}</span>
-  <div class="tid-wrap">
-    <span class="tid-lbl">TID:</span>
-    <span class="tid-val">${hl(r.tid,q)}</span>
-  </div>
+  <div class="tid-wrap"><span class="tid-lbl">TID:</span><span class="tid-val">${hl(r.tid,q)}</span></div>
   <span class="shop-name">${hl(r.slip1||'',q)}</span>
 </div>
 <div class="cb">
   <div class="sec">
     <div class="seclbl"><i class="ti ti-cpu"></i>ข้อมูลเครื่อง</div>
     <div class="ig">
-      <div class="ii"><label>TID</label>${v(r.tid,q,'vorg')}</div>
-      <div class="ii"><label>MID</label>${v(r.mid,q)}</div>
-      <div class="ii"><label>S/N</label>${v(r.sn,q)}</div>
-      <div class="ii"><label>Model</label>${v(r.model,q)}</div>
-      <div class="ii"><label>SW Version</label>${r.sw&&r.sw!=='-'?v(r.sw,q):`<span class="ve">—</span>`}</div>
-      ${r.slip1?`<div class="ii"><label>Slip 1</label>${v(r.slip1,q)}</div>`:''}
-      ${r.slip2?`<div class="ii"><label>Slip 2</label>${v(r.slip2,q)}</div>`:''}
-      ${r.slip3?`<div class="ii"><label>Slip 3</label>${v(r.slip3,q)}</div>`:''}
-      ${r.slip4?`<div class="ii"><label>Slip 4</label>${v(r.slip4,q)}</div>`:''}
+      <div class="ii"><label>TID</label>${vv(r.tid,q,'vorg')}</div>
+      <div class="ii"><label>MID</label>${vv(r.mid,q,'vblue')}</div>
+      <div class="ii"><label>S/N</label>${vv(r.sn,q,'vblue')}</div>
+      <div class="ii"><label>Model</label>${vv(r.model,q,'vblue')}</div>
+      <div class="ii"><label>SW Version</label>${r.sw&&r.sw!=='-'?vv(r.sw,q,'vblue'):`<span class="ve">—</span>`}</div>
     </div>
+    ${slips.length?`<div class="ig-slips">${slips.map((s,i)=>`<div class="ii"><label>Slip ${i+1}</label>${vv(s,q,'vblue')}</div>`).join('')}</div>`:''}
   </div>
   <div class="sec">
     <div class="seclbl"><i class="ti ti-wifi"></i>Network & Settle</div>
@@ -310,67 +270,60 @@ function card(r, q) {
   </div>
   <div class="sec">
     <div class="seclbl"><i class="ti ti-building-bank"></i>Host TID / MID ทั้งหมด</div>
-    ${hostGroups(hg)}
+    ${hostGroupsHTML(r.bank, r.hosts||[], q)}
   </div>
 </div>
 </div>`;
 }
 
-// ── Filter ──
-function getPool() {
-  return activeBank === 'ALL' ? Object.values(DB).flat() : (DB[activeBank] || []);
-}
-
-function filterDB(q) {
-  if (!q) return [];
-  const ql = q.toLowerCase();
-  return getPool().filter(r =>
+// ── Search ──
+function getPool(){return activeBank==='ALL'?Object.values(DB).flat():(DB[activeBank]||[]);}
+function filterDB(q){
+  if(!q) return[];
+  const ql=q.toLowerCase();
+  return getPool().filter(r=>
     [r.tid,r.mid,r.sn,r.slip1,r.slip2,r.slip3,r.slip4,r.ip,r.ip_pri,r.biller_id,r.biller_name]
-      .some(x => x && x.toLowerCase().includes(ql)) ||
-    (r.hosts||[]).some(h => (h.tid||'').includes(ql)||(h.mid||'').includes(ql))
+      .some(x=>x&&String(x).toLowerCase().includes(ql))||
+    (r.hosts||[]).some(h=>(h.tid||'').toLowerCase().includes(ql)||(h.mid||'').toLowerCase().includes(ql))
   );
 }
 
-// ── Render ──
-function render() {
-  const q = document.getElementById('qi').value.trim();
-  const res = document.getElementById('res');
-  if (!q) {
-    res.innerHTML = '<div class="empty"><i class="ti ti-search"></i></div>';
-    return;
-  }
-  const found = filterDB(q);
-  if (!found.length) {
-    res.innerHTML = `<div class="empty"><i class="ti ti-mood-empty"></i><div style="font-size:13px;margin-top:6px">ไม่พบ "${q}"</div></div>`;
-    return;
-  }
-  const shown = found.slice(0, LIMIT);
-  let html = `<div class="rc">พบ ${found.length.toLocaleString()} รายการ</div>` + shown.map(r => card(r, q)).join('');
-  if (found.length > LIMIT) html += `<div class="limit-note">แสดง ${LIMIT} จาก ${found.length.toLocaleString()} รายการ — พิมพ์ให้เจาะจงขึ้น</div>`;
-  res.innerHTML = html;
+function render(){
+  const q=document.getElementById('qi').value.trim();
+  const res=document.getElementById('res');
+  if(!q){res.innerHTML='<div class="empty"><i class="ti ti-search"></i></div>';return;}
+  const found=filterDB(q);
+  if(!found.length){res.innerHTML=`<div class="empty"><i class="ti ti-mood-empty"></i><div style="font-size:13px;margin-top:6px">ไม่พบ "${q}"</div></div>`;return;}
+  const shown=found.slice(0,LIMIT);
+  let html=`<div class="rc">พบ ${found.length.toLocaleString()} รายการ</div>`+shown.map(r=>card(r,q)).join('');
+  if(found.length>LIMIT) html+=`<div class="limit-note">แสดง ${LIMIT} จาก ${found.length.toLocaleString()} รายการ</div>`;
+  res.innerHTML=html;
 }
 
-// ── Events ──
-document.getElementById('qi').addEventListener('input', render);
-document.getElementById('qi').addEventListener('keydown', e => { if (e.key === 'Enter') render(); });
+// ── Load ──
+async function loadBank(b){
+  try{
+    const r=await fetch(`data_${b}.json?`+Date.now());
+    const d=await r.json();
+    DB[b]=d.records||[];
+    const el=document.getElementById(`cnt-${b}`);
+    if(el) el.textContent=DB[b].length.toLocaleString();
+    document.getElementById('cnt-ALL').textContent=Object.values(DB).flat().length.toLocaleString();
+    if(document.getElementById('qi').value.trim()) render();
+  }catch(e){console.warn(b,e);}
+}
 
-document.getElementById('pills').addEventListener('click', e => {
-  const pill = e.target.closest('.pill');
-  if (!pill) return;
-  activeBank = pill.dataset.b;
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('act'));
-  pill.classList.add('act');
+document.getElementById('qi').addEventListener('input',render);
+document.getElementById('qi').addEventListener('keydown',e=>{if(e.key==='Enter')render();});
+document.getElementById('pills').addEventListener('click',e=>{
+  const p=e.target.closest('.pill');if(!p)return;
+  activeBank=p.dataset.b;
+  document.querySelectorAll('.pill').forEach(x=>x.classList.remove('act'));
+  p.classList.add('act');
   render();
 });
-
-// ── Clock ──
-function tick() {
-  const n = new Date();
-  document.getElementById('clk').textContent = n.toISOString().slice(0,10) + ' · ' + n.toTimeString().slice(0,5);
-}
-tick(); setInterval(tick, 30000);
-
-// ── Init ──
+function tick(){const n=new Date();document.getElementById('clk').textContent=n.toISOString().slice(0,10)+' · '+n.toTimeString().slice(0,5);}
+tick();setInterval(tick,30000);
 Promise.all(BANKS.map(loadBank));
 </script>
 </body>
