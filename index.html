@@ -6,6 +6,7 @@
 <title>TermPoint — EDC Terminal Lookup</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body,input,button,select,textarea{font-family:'Poppins',system-ui,sans-serif!important}
@@ -101,10 +102,95 @@ body{background:#f0f4fa;font-size:14px}
 .g-aycap .gh{background:#fefce8;border-color:#fde047}.g-aycap .glbl{color:#854d0e}.g-aycap .gbody{background:#fefce8}.g-aycap{border-color:#fbbf24}
 .empty{text-align:center;padding:36px 20px;color:#aac0d8}
 .empty i{font-size:30px;display:block;margin-bottom:8px;color:#dce8f5}
+
+/* BATCH BUTTONS in hero */
+.batch-btns{display:flex;gap:8px;justify-content:center;margin-top:10px;position:relative;z-index:2}
+.bbtn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#bfdbfe;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.bbtn:hover{background:rgba(255,255,255,.2)}
+.bbtn i{font-size:14px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,37,128,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 10px 40px rgba(13,37,128,.2)}
+.modal-head{padding:16px 20px;border-bottom:1px solid #eef2f8;display:flex;align-items:center;gap:10px}
+.modal-head h3{font-size:15px;font-weight:600;color:#0d2580}
+.modal-close{margin-left:auto;cursor:pointer;color:#aac0d8;font-size:20px;line-height:1;padding:4px}
+.modal-close:hover{color:#1a4fc4}
+.modal-body{padding:20px}
+.drop-zone{border:2px dashed #bfdbfe;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:14px}
+.drop-zone:hover,.drop-zone.dragover{border-color:#f97316;background:#fff7ed}
+.drop-zone i{font-size:28px;color:#aac0d8;display:block;margin-bottom:8px}
+.drop-zone p{font-size:13px;color:#64748b}
+.drop-zone .browse{color:#1a4fc4;font-weight:600;text-decoration:underline}
+.or-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:#aac0d8;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:#eef2f8}
+.batch-textarea{width:100%;min-height:100px;border:1px solid #dce8f5;border-radius:8px;padding:10px 12px;font-size:13px;color:#0d2580;resize:vertical;outline:none}
+.batch-textarea:focus{border-color:#f97316}
+.batch-textarea::placeholder{color:#aac0d8}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-btn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-align:center}
+.modal-btn-primary{background:#f97316;color:#fff}
+.modal-btn-primary:hover{background:#ea6a0a}
+.modal-btn-secondary{background:#f0f4fa;color:#64748b}
+.modal-btn-secondary:hover{background:#e5ebf5}
+.file-info{display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:12px;color:#166534;margin-bottom:14px}
+.file-info i{font-size:16px}
+
+/* BATCH RESULTS BAR */
+.batch-bar{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.batch-bar-stat{font-size:12px;color:#9a3412}
+.batch-bar-stat b{color:#c2410c}
+.batch-bar-actions{margin-left:auto;display:flex;gap:8px}
+.bb-link{font-size:12px;color:#1a4fc4;cursor:pointer;text-decoration:underline;font-weight:500}
+.bb-link:hover{color:#0d2580}
+
+/* NOT FOUND mini badge in batch summary */
+.nf-badge{background:#fee2e2;color:#991b1b;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600}
+
+/* LOGIN SCREEN */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(160deg,#0d2580 0%,#1a4fc4 55%,#2a7aee 100%);display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px}
+.login-card{background:#fff;border-radius:16px;padding:36px 32px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(13,37,128,.3)}
+.login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:6px}
+.login-icon{width:40px;height:40px;background:#f97316;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.login-brand{font-size:19px;font-weight:600;color:#0d2580}
+.login-brand span{color:#f97316}
+.login-sub{text-align:center;font-size:11px;color:#aac0d8;letter-spacing:1px;text-transform:uppercase;margin-bottom:26px}
+.login-field{margin-bottom:14px}
+.login-field label{font-size:11px;font-weight:500;color:#64748b;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.login-input{width:100%;border:1.5px solid #dce8f5;border-radius:8px;padding:11px 14px;font-size:14px;color:#0d2580;outline:none;transition:border-color .15s}
+.login-input:focus{border-color:#f97316}
+.login-btn{width:100%;background:#f97316;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background .15s}
+.login-btn:hover{background:#ea6a0a}
+.login-error{background:#fee2e2;color:#991b1b;font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:14px;display:none;align-items:center;gap:6px}
+.login-error.show{display:flex}
+#mainApp{display:none}
 @media(max-width:600px){.ig,.ig-slips{grid-template-columns:1fr 1fr}.shop-name{display:none}.stats{grid-template-columns:repeat(3,1fr)}.gbody{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-icon"><i class="ti ti-device-laptop" style="color:#fff;font-size:19px"></i></div>
+      <div class="login-brand">Term<span>Point</span></div>
+    </div>
+    <div class="login-sub">EDC Terminal Lookup</div>
+    <div class="login-error" id="loginError"><i class="ti ti-alert-circle"></i><span>Username หรือ Password ไม่ถูกต้อง</span></div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" class="login-input" id="loginUser" placeholder="username" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" class="login-input" id="loginPass" placeholder="password" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+  </div>
+</div>
+
+<div id="mainApp">
 <nav class="nav">
   <div class="nav-icon"><i class="ti ti-device-laptop" style="color:#fff;font-size:17px"></i></div>
   <div><div class="nav-brand">Term<span>Point</span></div><div class="nav-sub">EDC Terminal Lookup</div></div>
@@ -132,6 +218,39 @@ body{background:#f0f4fa;font-size:14px}
     <div class="pill" data-b="SCB">SCB</div>
     <div class="pill" data-b="BBL">BBL</div>
     <div class="pill" data-b="BAY">BAY</div>
+  </div>
+  <div class="batch-btns">
+    <div class="bbtn" onclick="openImportModal()"><i class="ti ti-upload"></i>Import (Batch Search)</div>
+    <div class="bbtn" id="exportBtn" onclick="exportToExcel()" style="display:none"><i class="ti ti-download"></i>Export Excel</div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-head">
+      <i class="ti ti-upload" style="color:#f97316;font-size:18px"></i>
+      <h3>Import & Batch Search</h3>
+      <span class="modal-close" onclick="closeImportModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <i class="ti ti-file-spreadsheet"></i>
+        <p>ลากไฟล์ Excel มาวาง หรือ <span class="browse">เลือกไฟล์</span></p>
+        <p style="font-size:11px;margin-top:4px;color:#aac0d8">รองรับ .xlsx .xls .csv — ไม่จำกัดจำนวนแถว — คอลัมน์แรกคือ TID/MID/S/N</p>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+      <div id="fileInfoBox"></div>
+
+      <div class="or-divider">หรือ</div>
+
+      <textarea class="batch-textarea" id="batchPaste" placeholder="วาง TID หลายตัว คั่นด้วย comma, space, หรือขึ้นบรรทัดใหม่&#10;เช่น: 50124396, 73023694&#10;70732352"></textarea>
+
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-secondary" onclick="closeImportModal()">ยกเลิก</button>
+        <button class="modal-btn modal-btn-primary" onclick="runBatchSearch()">ค้นหาทั้งหมด</button>
+      </div>
+    </div>
   </div>
 </div>
 <div class="stats">
@@ -338,11 +457,218 @@ document.getElementById('pills').addEventListener('click',e=>{
   activeBank=p.dataset.b;
   document.querySelectorAll('.pill').forEach(x=>x.classList.remove('act'));
   p.classList.add('act');
-  render();
+  if(batchMode) renderBatchResults(); else render();
 });
 function tick(){const n=new Date();document.getElementById('clk').textContent=n.toISOString().slice(0,10)+' · '+n.toTimeString().slice(0,5);}
 tick();setInterval(tick,30000);
-Promise.all(BANKS.map(loadBank));
+// ════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════
+const USERS={ 'admin':'1234', 'HD':'abcd' };
+const SESSION_KEY='termpoint_session';
+
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError');
+  if(USERS[u] && USERS[u]===p){
+    err.classList.remove('show');
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({user:u, t:Date.now()}));
+    showApp();
+  } else {
+    err.classList.add('show');
+  }
+}
+
+document.getElementById('loginPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('loginUser').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+
+function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  Promise.all(BANKS.map(loadBank));
+}
+
+function checkSession(){
+  try{
+    const s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');
+    if(s && USERS[s.user]) { showApp(); return; }
+  }catch(e){}
+}
+checkSession();
+
+// ════════════════════════════════════════
+// BATCH IMPORT / EXPORT
+// ════════════════════════════════════════
+let batchMode=false;
+let batchResults=[]; // {query, record|null}
+let importedFile=null;
+
+function openImportModal(){
+  document.getElementById('importModal').classList.add('show');
+}
+function closeImportModal(){
+  document.getElementById('importModal').classList.remove('show');
+  document.getElementById('fileInput').value='';
+  document.getElementById('fileInfoBox').innerHTML='';
+  importedFile=null;
+}
+
+// ── Drag & drop ──
+const dropZone=document.getElementById('dropZone');
+const fileInput=document.getElementById('fileInput');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop',e=>{
+  e.preventDefault();dropZone.classList.remove('dragover');
+  if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change',e=>{ if(e.target.files.length) handleFile(e.target.files[0]); });
+
+function handleFile(file){
+  importedFile=file;
+  document.getElementById('fileInfoBox').innerHTML=`<div class="file-info"><i class="ti ti-circle-check"></i>${file.name} (${(file.size/1024).toFixed(0)} KB) พร้อม import</div>`;
+}
+
+function extractQueriesFromSheet(data){
+  // data = array of arrays (จาก XLSX.utils.sheet_to_json with header:1)
+  const queries=[];
+  data.forEach((row,i)=>{
+    if(i===0){
+      // เช็คว่าแถวแรกเป็น header หรือไม่ (ถ้าเป็นตัวเลขล้วนถือเป็นข้อมูล)
+      const v=String(row[0]||'').trim();
+      if(v && !/^\d+$/.test(v) && isNaN(v)) return; // skip header row
+    }
+    const v=String(row[0]||'').trim();
+    if(v) queries.push(v);
+  });
+  return queries;
+}
+
+async function runBatchSearch(){
+  let queries=[];
+
+  // 1. จากไฟล์
+  if(importedFile){
+    try{
+      const buf=await importedFile.arrayBuffer();
+      const wb=XLSX.read(buf,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const data=XLSX.utils.sheet_to_json(ws,{header:1,raw:false});
+      queries=queries.concat(extractQueriesFromSheet(data));
+    }catch(e){
+      alert('อ่านไฟล์ไม่สำเร็จ: '+e.message);
+      return;
+    }
+  }
+
+  // 2. จาก paste textarea
+  const pasteVal=document.getElementById('batchPaste').value.trim();
+  if(pasteVal){
+    const fromPaste=pasteVal.split(/[\s,;\n\r\t]+/).map(s=>s.trim()).filter(Boolean);
+    queries=queries.concat(fromPaste);
+  }
+
+  // unique
+  queries=[...new Set(queries)];
+
+  if(!queries.length){
+    alert('กรุณาอัพโหลดไฟล์ หรือ paste รายการ TID/MID/S/N ก่อนค้นหา');
+    return;
+  }
+  closeImportModal();
+  batchMode=true;
+  activeBank='ALL';
+  document.querySelectorAll('.pill').forEach(x=>x.classList.remove('act'));
+  document.querySelector('[data-b="ALL"]').classList.add('act');
+  document.getElementById('qi').value='';
+
+  // ค้นหาทุก query
+  const allRecords=Object.values(DB).flat();
+  batchResults=queries.map(q=>{
+    const ql=q.toLowerCase();
+    const found=allRecords.find(r=>
+      [r.tid,r.mid,r.sn].some(x=>x&&String(x).toLowerCase()===ql)
+    ) || allRecords.find(r=>
+      [r.tid,r.mid,r.sn,r.slip1].some(x=>x&&String(x).toLowerCase().includes(ql))
+    );
+    return {query:q, record:found||null};
+  });
+
+  document.getElementById('exportBtn').style.display='flex';
+  renderBatchResults();
+}
+
+function renderBatchResults(){
+  const res=document.getElementById('res');
+  const matched=batchResults.filter(b=>b.record);
+  const notFound=batchResults.filter(b=>!b.record);
+
+  let html=`<div class="batch-bar">
+    <span class="batch-bar-stat">Import แล้ว <b>${batchResults.length}</b> รายการ</span>
+    <span class="batch-bar-stat">พบ <b>${matched.length}</b> รายการ</span>
+    ${notFound.length?`<span class="batch-bar-stat">ไม่พบ <b style="color:#991b1b">${notFound.length}</b> รายการ</span>`:''}
+    <div class="batch-bar-actions">
+      <span class="bb-link" onclick="batchMode=false;document.getElementById('exportBtn').style.display='none';document.getElementById('qi').value='';render();">ออกจากโหมด Batch</span>
+    </div>
+  </div>`;
+
+  if(!matched.length){
+    html+=`<div class="empty"><i class="ti ti-mood-empty"></i><div style="font-size:13px">ไม่พบข้อมูลใดเลยใน ${batchResults.length} รายการที่ import</div></div>`;
+    res.innerHTML=html;
+    return;
+  }
+
+  html+=matched.map(b=>card(b.record,'')).join('');
+
+  if(notFound.length){
+    html+=`<div class="limit-note" style="text-align:left;padding:14px">
+      <strong style="color:#991b1b">ไม่พบข้อมูล (${notFound.length}):</strong><br>
+      ${notFound.map(b=>`<span class="nf-badge" style="margin:2px 3px 0 0;display:inline-block">${b.query}</span>`).join('')}
+    </div>`;
+  }
+
+  res.innerHTML=html;
+}
+
+// ── Export to Excel ──
+function flattenRecordForExport(r){
+  const base={
+    'Bank':r.bank, 'TID':r.tid, 'MID':r.mid, 'S/N':r.sn, 'Model':r.model, 'SW Version':r.sw,
+    'Slip 1':r.slip1||'', 'Slip 2':r.slip2||'', 'Slip 3':r.slip3||'', 'Slip 4':r.slip4||'',
+    'Settle':r.settle||'', 'Time Settle':r.time_settle||'', 'Force Settle':r.force_settle||'', 'Auto Settle':r.auto_settle||'',
+    'จำนวนเงิน':r.limit||'', 'LinkPOS':r.linkpos?'YES':'NO', 'ERM':r.erm?'YES':'NO',
+    'IP':r.ip||r.ip_pri||'', 'IP Secondary':r.ip_sec||'', 'Connection':r.conn_type||'',
+    'APN':r.apn||'', 'Flow Wallet':r.flow_wallet||'',
+    'Keyin':r.keyin?'YES':'NO', 'Tip':r.tip?'YES':'NO', 'Pre-Auth':r.preauth?'YES':'NO',
+    'Offline':r.offline?'YES':'NO', 'Refund':r.refund?'YES':'NO',
+    'Biller Name':r.biller_name||'', 'Biller ID':r.biller_id||'',
+    'Biller ID REF1':r.biller_id_ref1||'', 'Biller ID REF2':r.biller_id_ref2||'',
+  };
+  // host ทั้งหมด รวมเป็น string
+  const hostStr=(r.hosts||[]).map(h=>`${h.name}: TID=${h.tid||'-'} MID=${h.mid||'-'}`).join(' | ');
+  base['Host TID/MID ทั้งหมด']=hostStr;
+  return base;
+}
+
+function exportToExcel(){
+  if(!batchMode || !batchResults.length){ alert('กรุณา Import และค้นหาก่อน Export'); return; }
+  const matched=batchResults.filter(b=>b.record).map(b=>flattenRecordForExport(b.record));
+  const notFoundRows=batchResults.filter(b=>!b.record).map(b=>({'Query (ไม่พบ)':b.query}));
+
+  const wb=XLSX.utils.book_new();
+  if(matched.length){
+    const ws=XLSX.utils.json_to_sheet(matched);
+    XLSX.utils.book_append_sheet(wb,ws,'Results');
+  }
+  if(notFoundRows.length){
+    const ws2=XLSX.utils.json_to_sheet(notFoundRows);
+    XLSX.utils.book_append_sheet(wb,ws2,'Not Found');
+  }
+  const dt=new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb,`TermPoint_Export_${dt}.xlsx`);
+}
 </script>
+</div>
 </body>
 </html>
