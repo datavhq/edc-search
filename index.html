@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TermPoint — EDC Terminal Lookup</title>
+<title>Terminal Data Hub — EDC Terminal Lookup</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -173,8 +173,8 @@ body{background:#f0f4fa;font-size:14px}
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
-      <div class="login-icon"><i class="ti ti-device-laptop" style="color:#fff;font-size:19px"></i></div>
-      <div class="login-brand">Term<span>Point</span></div>
+      <div class="login-icon" style="background:#f97316"><i class="ti ti-point" style="color:#fff;font-size:19px"></i></div>
+      <div class="login-brand"><span style="color:#f97316;font-style:italic">i</span><span style="color:#1a4fc4">nisis</span><span style="color:#1a4fc4"> team</span></div>
     </div>
     <div class="login-sub">EDC Terminal Lookup</div>
     <div class="login-error" id="loginError"><i class="ti ti-alert-circle"></i><span>Username หรือ Password ไม่ถูกต้อง</span></div>
@@ -193,7 +193,7 @@ body{background:#f0f4fa;font-size:14px}
 <div id="mainApp">
 <nav class="nav">
   <div class="nav-icon"><i class="ti ti-device-laptop" style="color:#fff;font-size:17px"></i></div>
-  <div><div class="nav-brand">Term<span>Point</span></div><div class="nav-sub">EDC Terminal Lookup</div></div>
+  <div><div class="nav-brand">Terminal Data Hub</div><div class="nav-sub">EDC Terminal Lookup</div></div>
   <div class="nav-r">
     <div class="npill"><div class="ndot"></div>online</div>
     <div class="npill" id="clk"></div>
@@ -645,9 +645,12 @@ function flattenRecordForExport(r){
     'Biller Name':r.biller_name||'', 'Biller ID':r.biller_id||'',
     'Biller ID REF1':r.biller_id_ref1||'', 'Biller ID REF2':r.biller_id_ref2||'',
   };
-  // host ทั้งหมด รวมเป็น string
-  const hostStr=(r.hosts||[]).map(h=>`${h.name}: TID=${h.tid||'-'} MID=${h.mid||'-'}`).join(' | ');
-  base['Host TID/MID ทั้งหมด']=hostStr;
+  // host แยก column ตามชื่อ — Host Name | Host TID | Host MID
+  (r.hosts||[]).forEach(h=>{
+    const name = h.name||'HOST';
+    base[`[${name}] TID`] = h.tid||'';
+    base[`[${name}] MID`] = h.mid||'';
+  });
   return base;
 }
 
@@ -666,7 +669,7 @@ function exportToExcel(){
     XLSX.utils.book_append_sheet(wb,ws2,'Not Found');
   }
   const dt=new Date().toISOString().slice(0,10);
-  XLSX.writeFile(wb,`TermPoint_Export_${dt}.xlsx`);
+  XLSX.writeFile(wb,`TerminalDataHub_Export_${dt}.xlsx`);
 }
 </script>
 </div>
