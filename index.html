@@ -466,6 +466,7 @@ tick();setInterval(tick,30000);
 // ════════════════════════════════════════
 const USERS={ 'admin':'1234', 'HD':'abcd' };
 const SESSION_KEY='termpoint_session';
+const SESSION_TTL=24*60*60*1000; // 24 ชั่วโมง (ms)
 
 function doLogin(){
   const u=document.getElementById('loginUser').value.trim();
@@ -473,7 +474,7 @@ function doLogin(){
   const err=document.getElementById('loginError');
   if(USERS[u] && USERS[u]===p){
     err.classList.remove('show');
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({user:u, t:Date.now()}));
+    localStorage.setItem(SESSION_KEY, JSON.stringify({user:u, t:Date.now()}));
     showApp();
   } else {
     err.classList.add('show');
@@ -491,8 +492,12 @@ function showApp(){
 
 function checkSession(){
   try{
-    const s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');
-    if(s && USERS[s.user]) { showApp(); return; }
+    const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');
+    if(s && USERS[s.user] && (Date.now()-s.t) < SESSION_TTL){
+      showApp(); return;
+    }
+    // หมดอายุ — ลบทิ้ง
+    localStorage.removeItem(SESSION_KEY);
   }catch(e){}
 }
 checkSession();
