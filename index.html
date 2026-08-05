@@ -506,7 +506,7 @@ checkSession();
 // BATCH IMPORT / EXPORT
 // ════════════════════════════════════════
 let batchMode=false;
-let batchResults=[]; // {query, record|null}
+let batchResults=[]; // {query, records:[]}
 let importedFile=null;
 
 function openImportModal(){
@@ -588,16 +588,17 @@ async function runBatchSearch(){
   document.querySelector('[data-b="ALL"]').classList.add('act');
   document.getElementById('qi').value='';
 
-  // ค้นหาทุก query
+  // ค้นหาทุก query — ใช้ filter เพื่อให้ได้ทุก record ที่ match (เหมือน normal search)
   const allRecords=Object.values(DB).flat();
   batchResults=queries.map(q=>{
     const ql=q.toLowerCase();
-    const found=allRecords.find(r=>
-      [r.tid,r.mid,r.sn].some(x=>x&&String(x).toLowerCase()===ql)
-    ) || allRecords.find(r=>
-      [r.tid,r.mid,r.sn,r.slip1].some(x=>x&&String(x).toLowerCase().includes(ql))
+    // ค้นใน field หลัก + hosts (เหมือน filterDB)
+    const found=allRecords.filter(r=>
+      [r.tid,r.mid,r.sn,r.slip1,r.slip2,r.slip3,r.slip4,r.ip,r.ip_pri,r.biller_id,r.biller_name]
+        .some(x=>x&&String(x).toLowerCase().includes(ql))||
+      (r.hosts||[]).some(h=>(h.tid||'').toLowerCase().includes(ql)||(h.mid||'').toLowerCase().includes(ql))
     );
-    return {query:q, record:found||null};
+    return {query:q, records:found};
   });
 
   document.getElementById('exportBtn').style.display='flex';
@@ -606,12 +607,13 @@ async function runBatchSearch(){
 
 function renderBatchResults(){
   const res=document.getElementById('res');
-  const matched=batchResults.filter(b=>b.record);
-  const notFound=batchResults.filter(b=>!b.record);
+  const matched=batchResults.filter(b=>b.records.length>0);
+  const notFound=batchResults.filter(b=>!b.records.length);
+  const totalRecords=matched.reduce((s,b)=>s+b.records.length,0);
 
   let html=`<div class="batch-bar">
     <span class="batch-bar-stat">Import แล้ว <b>${batchResults.length}</b> รายการ</span>
-    <span class="batch-bar-stat">พบ <b>${matched.length}</b> รายการ</span>
+    <span class="batch-bar-stat">พบ <b>${totalRecords}</b> รายการ</span>
     ${notFound.length?`<span class="batch-bar-stat">ไม่พบ <b style="color:#991b1b">${notFound.length}</b> รายการ</span>`:''}
     <div class="batch-bar-actions">
       <span class="bb-link" onclick="batchMode=false;document.getElementById('exportBtn').style.display='none';document.getElementById('qi').value='';render();">ออกจากโหมด Batch</span>
@@ -624,7 +626,13 @@ function renderBatchResults(){
     return;
   }
 
-  html+=matched.map(b=>card(b.record,'')).join('');
+  // แสดง header ของแต่ละ query + รายการทั้งหมด
+  matched.forEach(b=>{
+    if(batchResults.length>1){
+      html+=`<div class="rc" style="margin-top:8px">🔍 <b>${b.query}</b> — พบ ${b.records.length} รายการ</div>`;
+    }
+    html+=b.records.map(r=>card(r,b.query)).join('');
+  });
 
   if(notFound.length){
     html+=`<div class="limit-note" style="text-align:left;padding:14px">
@@ -661,8 +669,8 @@ function flattenRecordForExport(r){
 
 function exportToExcel(){
   if(!batchMode || !batchResults.length){ alert('กรุณา Import และค้นหาก่อน Export'); return; }
-  const matched=batchResults.filter(b=>b.record).map(b=>flattenRecordForExport(b.record));
-  const notFoundRows=batchResults.filter(b=>!b.record).map(b=>({'Query (ไม่พบ)':b.query}));
+  const matched=batchResults.filter(b=>b.records.length>0).flatMap(b=>b.records.map(r=>({...flattenRecordForExport(r),'Query':b.query})));
+  const notFoundRows=batchResults.filter(b=>!b.records.length).map(b=>({'Query (ไม่พบ)':b.query}));
 
   const wb=XLSX.utils.book_new();
   if(matched.length){
