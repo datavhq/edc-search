@@ -19,6 +19,7 @@ body{background:#f0f4fa;font-size:14px}
 .nav-r{margin-left:auto;display:flex;align-items:center;gap:6px}
 .ndot{width:7px;height:7px;background:#4ade80;border-radius:50%}
 .npill{font-size:11px;color:#bfdbfe;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px}
+.npill[onclick]:hover{background:rgba(255,255,255,.22);cursor:pointer}
 .hero{background:linear-gradient(160deg,#0d2580 0%,#1a4fc4 55%,#2a7aee 100%);padding:28px 20px 20px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.04);top:-80px;right:-50px;pointer-events:none}
 .hero::after{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);bottom:-60px;left:-40px;pointer-events:none}
@@ -167,10 +168,6 @@ body{background:#f0f4fa;font-size:14px}
 .ttl-pill{font-size:12px;padding:5px 14px;border-radius:20px;border:1.5px solid #dce8f5;color:#475569;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
 .ttl-pill:hover{border-color:#f97316;color:#f97316}
 .ttl-pill.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:600}
-font-size:11px;color:#bfdbfe;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px}
-.nav-btn{font-size:11px;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:4px 11px;border-radius:20px;display:none;align-items:center;gap:5px;cursor:pointer;transition:all .15s}
-.nav-btn:hover{background:rgba(255,255,255,.25)}
-.nav-btn i{font-size:13px}
 
 /* LOGIN SCREEN */
 #loginScreen{position:fixed;inset:0;background:linear-gradient(160deg,#0d2580 0%,#1a4fc4 55%,#2a7aee 100%);display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px}
@@ -221,9 +218,9 @@ font-size:11px;color:#bfdbfe;background:rgba(255,255,255,.12);padding:4px 10px;b
   <div class="nav-r">
     <div class="npill"><div class="ndot"></div>online</div>
     <div class="npill" id="clk"></div>
-    <div class="nav-user-pill"><i class="ti ti-user" style="font-size:13px"></i><span id="navUser">—</span></div>
-    <div class="nav-btn" id="adminBtn" onclick="openAdminModal()"><i class="ti ti-users"></i>Users</div>
-    <div class="nav-btn" id="logoutBtn" style="display:flex" onclick="logout()"><i class="ti ti-logout"></i>ออก</div>
+    <div class="npill" id="navUserPill"><i class="ti ti-user" style="font-size:12px"></i><span id="navUser">—</span></div>
+    <div class="npill" id="adminBtn" onclick="openAdminModal()" style="display:none;cursor:pointer"><i class="ti ti-users" style="font-size:12px"></i>Users</div>
+    <div class="npill" id="logoutBtn" onclick="logout()" style="cursor:pointer"><i class="ti ti-logout" style="font-size:12px"></i>ออก</div>
   </div>
 </nav>
 <div class="hero">
@@ -537,7 +534,7 @@ tick();setInterval(tick,30000);
 // CONFIG
 // ════════════════════════════════════════
 // ใช้ Cloudflare Pages (tdh-vhq.pages.dev)
-// API อยู่ที่ /auth/* บน domain เดียวกัน → WORKER_URL='' (ไม่ต้องเปลี่ยน)
+// Cloudflare Worker URL
 const WORKER_URL='https://terminal-data-hub-auth.datavhq.workers.dev';
 
 const TOKEN_KEY='tdh_token';
@@ -594,6 +591,8 @@ function showApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainApp').style.display='block';
   document.getElementById('navUser').textContent=currentUser.username;
+  // ซ่อนก่อนเสมอ แล้วค่อยโชว์ถ้าเป็น admin
+  document.getElementById('adminBtn').style.display='none';
   if(currentUser.role==='admin') document.getElementById('adminBtn').style.display='flex';
   Promise.all(BANKS.map(loadBank));
 }
@@ -626,6 +625,7 @@ function authHeaders(){
 }
 
 function openAdminModal(){
+  if(currentUser.role!=='admin'){return;}
   document.getElementById('adminModal').classList.add('show');
   loadUsers();
   loadConfig();
