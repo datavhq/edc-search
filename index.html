@@ -681,7 +681,7 @@ async function saveConfig(ttlKey, btn){
   }catch(e){showAdminMsg('เกิดข้อผิดพลาด: '+e.message,true);}
 }
 
-
+async function loadUsers(){
   const wrap=document.getElementById('userListWrap');
   wrap.innerHTML='<div style="color:#aac0d8;font-size:13px;padding:6px 0">กำลังโหลด...</div>';
   try{
