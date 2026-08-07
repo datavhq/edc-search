@@ -148,6 +148,30 @@ body{background:#f0f4fa;font-size:14px}
 /* NOT FOUND mini badge in batch summary */
 .nf-badge{background:#fee2e2;color:#991b1b;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600}
 
+/* ADMIN PANEL */
+.admin-table{width:100%;border-collapse:collapse;font-size:13px}
+.admin-table th{text-align:left;padding:6px 10px;color:#64748b;font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #eef2f8}
+.admin-table td{padding:9px 10px;border-bottom:.5px solid #f0f4fa;vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:none}
+.role-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.role-admin{background:#fff7ed;color:#c2410c}
+.role-user{background:#eff6ff;color:#1a4fc4}
+.admin-action{font-size:12px;color:#1a4fc4;cursor:pointer;text-decoration:underline;background:none;border:none;font-family:inherit;padding:0;margin-left:10px}
+.admin-action:hover{color:#0d2580}
+.admin-action.danger{color:#991b1b}
+.admin-action.danger:hover{color:#7f1d1d}
+.admin-add-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-top:14px}
+.admin-add-grid select{width:100%;border:1.5px solid #dce8f5;border-radius:8px;padding:9px 10px;font-size:13px;color:#0d2580;outline:none;font-family:'Poppins',system-ui,sans-serif}
+.admin-add-grid select:focus{border-color:#f97316}
+.admin-section-title{font-size:11px;font-weight:600;color:#0d2580;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:18px;padding-top:16px;border-top:1px solid #eef2f8}
+.ttl-pill{font-size:12px;padding:5px 14px;border-radius:20px;border:1.5px solid #dce8f5;color:#475569;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.ttl-pill:hover{border-color:#f97316;color:#f97316}
+.ttl-pill.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:600}
+font-size:11px;color:#bfdbfe;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px}
+.nav-btn{font-size:11px;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:4px 11px;border-radius:20px;display:none;align-items:center;gap:5px;cursor:pointer;transition:all .15s}
+.nav-btn:hover{background:rgba(255,255,255,.25)}
+.nav-btn i{font-size:13px}
+
 /* LOGIN SCREEN */
 #loginScreen{position:fixed;inset:0;background:linear-gradient(160deg,#0d2580 0%,#1a4fc4 55%,#2a7aee 100%);display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px}
 .login-card{background:#fff;border-radius:16px;padding:36px 32px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(13,37,128,.3)}
@@ -197,6 +221,9 @@ body{background:#f0f4fa;font-size:14px}
   <div class="nav-r">
     <div class="npill"><div class="ndot"></div>online</div>
     <div class="npill" id="clk"></div>
+    <div class="nav-user-pill"><i class="ti ti-user" style="font-size:13px"></i><span id="navUser">—</span></div>
+    <div class="nav-btn" id="adminBtn" onclick="openAdminModal()"><i class="ti ti-users"></i>Users</div>
+    <div class="nav-btn" id="logoutBtn" style="display:flex" onclick="logout()"><i class="ti ti-logout"></i>ออก</div>
   </div>
 </nav>
 <div class="hero">
@@ -253,6 +280,51 @@ body{background:#f0f4fa;font-size:14px}
     </div>
   </div>
 </div>
+<!-- ADMIN USERS MODAL -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-head">
+      <i class="ti ti-users" style="color:#f97316;font-size:18px"></i>
+      <h3>จัดการ Users</h3>
+      <span class="modal-close" onclick="closeAdminModal()">&times;</span>
+    </div>
+    <div class="modal-body" style="padding:20px">
+      <div id="userListWrap">
+        <div style="color:#aac0d8;font-size:13px">กำลังโหลด...</div>
+      </div>
+      <div class="admin-section-title"><i class="ti ti-clock" style="margin-right:4px;color:#f97316"></i>ตั้งค่า Session Login</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:13px;color:#475569">อายุ Token:</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="ttlOptions">
+          <span style="color:#aac0d8;font-size:13px">กำลังโหลด...</span>
+        </div>
+        <span id="ttlSaveMsg" style="font-size:12px;color:#166534;display:none">✓ บันทึกแล้ว</span>
+      </div>
+      <div style="font-size:11px;color:#aac0d8;margin-top:6px">* มีผลกับการ login ครั้งถัดไป ไม่กระทบ session ที่เปิดอยู่</div>
+
+      <div class="admin-section-title"><i class="ti ti-user-plus" style="margin-right:4px;color:#f97316"></i>เพิ่ม User ใหม่</div>      <div class="admin-add-grid">
+        <div>
+          <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Username</label>
+          <input type="text" id="newUser" class="login-input" placeholder="username" style="padding:9px 12px;font-size:13px">
+        </div>
+        <div>
+          <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Password</label>
+          <input type="password" id="newPass" class="login-input" placeholder="password" style="padding:9px 12px;font-size:13px">
+        </div>
+        <div>
+          <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Role</label>
+          <select id="newRole" class="admin-add-grid select" style="border:1.5px solid #dce8f5;border-radius:8px;padding:9px 12px;font-size:13px;color:#0d2580;outline:none;font-family:inherit;background:#fff;width:100%">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div id="adminMsgBox" style="display:none;margin-top:10px;font-size:12px;padding:8px 12px;border-radius:6px"></div>
+      <button onclick="addUser()" style="margin-top:12px;width:100%;background:#f97316;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ เพิ่ม User</button>
+    </div>
+  </div>
+</div>
+
 <div class="stats">
   <div class="stat"><div class="sn" style="color:#1a4fc4" id="cnt-ALL">—</div><div class="sl">Total</div></div>
   <div class="stat"><div class="sn" style="color:#08a818" id="cnt-KBANK">—</div><div class="sl">KBANK</div></div>
@@ -462,23 +534,57 @@ document.getElementById('pills').addEventListener('click',e=>{
 function tick(){const n=new Date();document.getElementById('clk').textContent=n.toISOString().slice(0,10)+' · '+n.toTimeString().slice(0,5);}
 tick();setInterval(tick,30000);
 // ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+// ใช้ Cloudflare Pages (tdh-vhq.pages.dev)
+// API อยู่ที่ /auth/* บน domain เดียวกัน → WORKER_URL='' (ไม่ต้องเปลี่ยน)
+const WORKER_URL='';
+
+const TOKEN_KEY='tdh_token';
+let currentUser={username:'',role:''};
+
+// ── decode JWT payload (client-side, ไม่ verify sig) ──
+function decodeToken(token){
+  try{
+    const p=token.split('.')[1];
+    return JSON.parse(atob(p.replace(/-/g,'+').replace(/_/g,'/')));
+  }catch{return null;}
+}
+
+// ════════════════════════════════════════
 // LOGIN
 // ════════════════════════════════════════
-const USERS={ 'admin':'1234', 'HD':'abcd' };
-const SESSION_KEY='termpoint_session';
-const SESSION_TTL=24*60*60*1000; // 24 ชั่วโมง (ms)
-
-function doLogin(){
+async function doLogin(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');
-  if(USERS[u] && USERS[u]===p){
-    err.classList.remove('show');
-    localStorage.setItem(SESSION_KEY, JSON.stringify({user:u, t:Date.now()}));
-    showApp();
-  } else {
+  const btn=document.querySelector('.login-btn');
+  err.classList.remove('show');
+  if(!u||!p){
+    err.querySelector('span').textContent='กรุณากรอก Username และ Password';
+    err.classList.add('show'); return;
+  }
+  btn.disabled=true; btn.textContent='กำลังตรวจสอบ...';
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/login`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:u,password:p})
+    });
+    const data=await res.json();
+    if(res.ok && data.token){
+      localStorage.setItem(TOKEN_KEY,data.token);
+      currentUser={username:data.username,role:data.role};
+      showApp();
+    }else{
+      err.querySelector('span').textContent=data.error||'Username หรือ Password ไม่ถูกต้อง';
+      err.classList.add('show');
+    }
+  }catch(e){
+    err.querySelector('span').textContent='เชื่อมต่อ Server ไม่ได้ — ตรวจสอบ WORKER_URL ใน index.html';
     err.classList.add('show');
   }
+  btn.disabled=false; btn.textContent='เข้าสู่ระบบ';
 }
 
 document.getElementById('loginPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
@@ -487,20 +593,186 @@ document.getElementById('loginUser').addEventListener('keydown',e=>{ if(e.key===
 function showApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainApp').style.display='block';
+  document.getElementById('navUser').textContent=currentUser.username;
+  if(currentUser.role==='admin') document.getElementById('adminBtn').style.display='flex';
   Promise.all(BANKS.map(loadBank));
 }
 
 function checkSession(){
-  try{
-    const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');
-    if(s && USERS[s.user] && (Date.now()-s.t) < SESSION_TTL){
-      showApp(); return;
-    }
-    // หมดอายุ — ลบทิ้ง
-    localStorage.removeItem(SESSION_KEY);
-  }catch(e){}
+  const token=localStorage.getItem(TOKEN_KEY);
+  if(!token) return;
+  const payload=decodeToken(token);
+  if(!payload||Date.now()>payload.exp){
+    localStorage.removeItem(TOKEN_KEY); return;
+  }
+  currentUser={username:payload.sub,role:payload.role};
+  showApp();
 }
 checkSession();
+
+function logout(){
+  localStorage.removeItem(TOKEN_KEY);
+  location.reload();
+}
+
+// ════════════════════════════════════════
+// ADMIN PANEL — จัดการ Users
+// ════════════════════════════════════════
+function authHeaders(){
+  return{
+    'Content-Type':'application/json',
+    'Authorization':'Bearer '+localStorage.getItem(TOKEN_KEY)
+  };
+}
+
+function openAdminModal(){
+  document.getElementById('adminModal').classList.add('show');
+  loadUsers();
+  loadConfig();
+}
+function closeAdminModal(){
+  document.getElementById('adminModal').classList.remove('show');
+  hideAdminMsg();
+}
+
+function showAdminMsg(msg,isErr=false){
+  const box=document.getElementById('adminMsgBox');
+  box.textContent=msg;
+  box.style.display='block';
+  box.style.background=isErr?'#fee2e2':'#f0fdf4';
+  box.style.color=isErr?'#991b1b':'#166534';
+  box.style.border=isErr?'1px solid #fecaca':'1px solid #bbf7d0';
+}
+function hideAdminMsg(){
+  document.getElementById('adminMsgBox').style.display='none';
+}
+
+async function loadConfig(){
+  const wrap=document.getElementById('ttlOptions');
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/config`,{headers:authHeaders()});
+    const data=await res.json();
+    if(!res.ok){wrap.innerHTML=`<span style="color:#991b1b;font-size:12px">${data.error}</span>`;return;}
+    wrap.innerHTML=data.options.map(o=>`
+      <button class="ttl-pill${o.key===data.session_ttl?' active':''}"
+        onclick="saveConfig('${o.key}',this)">${o.label}</button>
+    `).join('');
+  }catch(e){
+    wrap.innerHTML=`<span style="color:#991b1b;font-size:12px">โหลดไม่ได้: ${e.message}</span>`;
+  }
+}
+
+async function saveConfig(ttlKey, btn){
+  const msg=document.getElementById('ttlSaveMsg');
+  msg.style.display='none';
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/config`,{
+      method:'PUT',headers:authHeaders(),
+      body:JSON.stringify({session_ttl:ttlKey})
+    });
+    const data=await res.json();
+    if(res.ok){
+      // อัปเดต active pill
+      document.querySelectorAll('.ttl-pill').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      msg.style.display='inline';
+      setTimeout(()=>msg.style.display='none',2500);
+    }else showAdminMsg(data.error||'เกิดข้อผิดพลาด',true);
+  }catch(e){showAdminMsg('เกิดข้อผิดพลาด: '+e.message,true);}
+}
+
+
+  const wrap=document.getElementById('userListWrap');
+  wrap.innerHTML='<div style="color:#aac0d8;font-size:13px;padding:6px 0">กำลังโหลด...</div>';
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/users`,{headers:authHeaders()});
+    const data=await res.json();
+    if(!res.ok){wrap.innerHTML=`<div style="color:#991b1b;font-size:13px">${data.error}</div>`;return;}
+    if(!data.users||!data.users.length){
+      wrap.innerHTML='<div style="color:#aac0d8;font-size:13px">ยังไม่มี user</div>'; return;
+    }
+    wrap.innerHTML=`<table class="admin-table">
+      <thead><tr>
+        <th>Username</th><th>Role</th><th>สร้างเมื่อ</th><th style="text-align:right">Actions</th>
+      </tr></thead>
+      <tbody>${data.users.map(u=>`
+        <tr>
+          <td style="font-weight:500;color:#0d2580">${u.username}${u.username===currentUser.username?'<span style="font-size:10px;color:#f97316;margin-left:6px">(คุณ)</span>':''}</td>
+          <td><span class="role-badge ${u.role==='admin'?'role-admin':'role-user'}">${u.role}</span></td>
+          <td style="color:#aac0d8;font-size:11px">${u.createdAt?u.createdAt.slice(0,10):'—'}</td>
+          <td style="text-align:right;white-space:nowrap">
+            <button class="admin-action" onclick="promptResetPass('${u.username}')">Reset Pass</button>
+            <button class="admin-action" onclick="toggleRole('${u.username}','${u.role}')">${u.role==='admin'?'→ User':'→ Admin'}</button>
+            ${u.username!==currentUser.username?`<button class="admin-action danger" onclick="deleteUser('${u.username}')">ลบ</button>`:''}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }catch(e){
+    wrap.innerHTML=`<div style="color:#991b1b;font-size:13px">เกิดข้อผิดพลาด: ${e.message}</div>`;
+  }
+}
+
+async function addUser(){
+  const u=document.getElementById('newUser').value.trim();
+  const p=document.getElementById('newPass').value;
+  const r=document.getElementById('newRole').value;
+  hideAdminMsg();
+  if(!u||!p){showAdminMsg('กรุณากรอก Username และ Password',true);return;}
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/users`,{
+      method:'POST',headers:authHeaders(),
+      body:JSON.stringify({username:u,password:p,role:r})
+    });
+    const data=await res.json();
+    if(res.ok){
+      document.getElementById('newUser').value='';
+      document.getElementById('newPass').value='';
+      showAdminMsg(`เพิ่ม user "${u}" สำเร็จ`);
+      loadUsers();
+    }else showAdminMsg(data.error||'เกิดข้อผิดพลาด',true);
+  }catch(e){showAdminMsg('เกิดข้อผิดพลาด: '+e.message,true);}
+}
+
+async function promptResetPass(username){
+  const p=prompt(`ตั้ง Password ใหม่สำหรับ "${username}":`);
+  if(!p||!p.trim()) return;
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/users/${encodeURIComponent(username)}`,{
+      method:'PUT',headers:authHeaders(),
+      body:JSON.stringify({password:p.trim()})
+    });
+    const data=await res.json();
+    if(res.ok) showAdminMsg(`เปลี่ยน Password ของ "${username}" สำเร็จ`);
+    else showAdminMsg(data.error||'เกิดข้อผิดพลาด',true);
+  }catch(e){showAdminMsg('เกิดข้อผิดพลาด: '+e.message,true);}
+}
+
+async function toggleRole(username,currentRole){
+  const newRole=currentRole==='admin'?'user':'admin';
+  if(!confirm(`เปลี่ยน "${username}" จาก ${currentRole} → ${newRole}?`)) return;
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/users/${encodeURIComponent(username)}`,{
+      method:'PUT',headers:authHeaders(),
+      body:JSON.stringify({role:newRole})
+    });
+    const data=await res.json();
+    if(res.ok){showAdminMsg(`เปลี่ยน role ของ "${username}" เป็น ${newRole} สำเร็จ`);loadUsers();}
+    else showAdminMsg(data.error||'เกิดข้อผิดพลาด',true);
+  }catch(e){showAdminMsg('เกิดข้อผิดพลาด: '+e.message,true);}
+}
+
+async function deleteUser(username){
+  if(!confirm(`ลบ user "${username}" ออกจากระบบ?\nไม่สามารถกู้คืนได้`)) return;
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/users/${encodeURIComponent(username)}`,{
+      method:'DELETE',headers:authHeaders()
+    });
+    const data=await res.json();
+    if(res.ok){showAdminMsg(`ลบ user "${username}" สำเร็จ`);loadUsers();}
+    else showAdminMsg(data.error||'เกิดข้อผิดพลาด',true);
+  }catch(e){showAdminMsg('เกิดข้อผิดพลาด: '+e.message,true);}
+}
 
 // ════════════════════════════════════════
 // BATCH IMPORT / EXPORT
