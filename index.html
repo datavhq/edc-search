@@ -166,6 +166,9 @@ body{background:#f0f4fa;font-size:14px}
 .admin-add-grid select{width:100%;border:1.5px solid #dce8f5;border-radius:8px;padding:9px 10px;font-size:13px;color:#0d2580;outline:none;font-family:'Poppins',system-ui,sans-serif}
 .admin-add-grid select:focus{border-color:#f97316}
 .admin-section-title{font-size:11px;font-weight:600;color:#0d2580;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:18px;padding-top:16px;border-top:1px solid #eef2f8}
+.admin-tab{font-size:12px;padding:10px 16px;border:none;background:none;cursor:pointer;color:#64748b;font-family:inherit;border-bottom:2px solid transparent;font-weight:500;transition:all .15s}
+.admin-tab:hover{color:#0d2580}
+.admin-tab.active{color:#f97316;border-bottom-color:#f97316;font-weight:600}
 .ttl-pill{font-size:12px;padding:5px 14px;border-radius:20px;border:1.5px solid #dce8f5;color:#475569;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
 .ttl-pill:hover{border-color:#f97316;color:#f97316}
 .ttl-pill.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:600}
@@ -280,45 +283,70 @@ body{background:#f0f4fa;font-size:14px}
 </div>
 <!-- ADMIN USERS MODAL -->
 <div class="modal-overlay" id="adminModal">
-  <div class="modal" style="max-width:640px">
+  <div class="modal" style="max-width:680px">
     <div class="modal-head">
       <i class="ti ti-users" style="color:#f97316;font-size:18px"></i>
-      <h3>จัดการ Users</h3>
+      <h3 id="adminModalTitle">จัดการ Users</h3>
       <span class="modal-close" onclick="closeAdminModal()">&times;</span>
     </div>
-    <div class="modal-body" style="padding:20px">
-      <div id="userListWrap">
-        <div style="color:#aac0d8;font-size:13px">กำลังโหลด...</div>
-      </div>
-      <div class="admin-section-title"><i class="ti ti-clock" style="margin-right:4px;color:#f97316"></i>ตั้งค่า Session Login</div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="font-size:13px;color:#475569">อายุ Token:</span>
-        <div style="display:flex;gap:6px;flex-wrap:wrap" id="ttlOptions">
-          <span style="color:#aac0d8;font-size:13px">กำลังโหลด...</span>
-        </div>
-        <span id="ttlSaveMsg" style="font-size:12px;color:#166534;display:none">✓ บันทึกแล้ว</span>
-      </div>
-      <div style="font-size:11px;color:#aac0d8;margin-top:6px">* มีผลกับการ login ครั้งถัดไป ไม่กระทบ session ที่เปิดอยู่</div>
+    <!-- Tab Bar (owner only) -->
+    <div id="ownerTabBar" style="display:none;border-bottom:1px solid #eef2f8;padding:0 20px;display:none;gap:0">
+      <button class="admin-tab active" data-tab="users" onclick="switchAdminTab('users',this)">👥 Users</button>
+      <button class="admin-tab" data-tab="sessions" onclick="switchAdminTab('sessions',this)">🟢 ออนไลน์</button>
+      <button class="admin-tab" data-tab="logs" onclick="switchAdminTab('logs',this)">📋 ประวัติ</button>
+    </div>
+    <div class="modal-body" style="padding:20px;max-height:75vh;overflow-y:auto">
 
-      <div class="admin-section-title"><i class="ti ti-user-plus" style="margin-right:4px;color:#f97316"></i>เพิ่ม User ใหม่</div>      <div class="admin-add-grid">
-        <div>
-          <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Username</label>
-          <input type="text" id="newUser" class="login-input" placeholder="username" style="padding:9px 12px;font-size:13px">
+      <!-- ── TAB: USERS ── -->
+      <div id="tabUsers">
+        <div id="userListWrap"><div style="color:#aac0d8;font-size:13px">กำลังโหลด...</div></div>
+        <div class="admin-section-title"><i class="ti ti-clock" style="margin-right:4px;color:#f97316"></i>ตั้งค่า Session Login</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-size:13px;color:#475569">อายุ Token:</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="ttlOptions"><span style="color:#aac0d8;font-size:13px">กำลังโหลด...</span></div>
+          <span id="ttlSaveMsg" style="font-size:12px;color:#166534;display:none">✓ บันทึกแล้ว</span>
         </div>
-        <div>
-          <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Password</label>
-          <input type="password" id="newPass" class="login-input" placeholder="password" style="padding:9px 12px;font-size:13px">
+        <div style="font-size:11px;color:#aac0d8;margin-top:6px">* มีผลกับการ login ครั้งถัดไป ไม่กระทบ session ที่เปิดอยู่</div>
+        <div class="admin-section-title"><i class="ti ti-user-plus" style="margin-right:4px;color:#f97316"></i>เพิ่ม User ใหม่</div>
+        <div class="admin-add-grid">
+          <div>
+            <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Username</label>
+            <input type="text" id="newUser" class="login-input" placeholder="username" style="padding:9px 12px;font-size:13px">
+          </div>
+          <div>
+            <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Password</label>
+            <input type="password" id="newPass" class="login-input" placeholder="password" style="padding:9px 12px;font-size:13px">
+          </div>
+          <div>
+            <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Role</label>
+            <select id="newRole" class="admin-add-grid select" style="border:1.5px solid #dce8f5;border-radius:8px;padding:9px 12px;font-size:13px;color:#0d2580;outline:none;font-family:inherit;background:#fff;width:100%">
+              <option value="user">User</option>
+              <option value="admin" id="adminRoleOpt" style="display:none">Admin</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label style="font-size:10px;color:#64748b;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Role</label>
-          <select id="newRole" class="admin-add-grid select" style="border:1.5px solid #dce8f5;border-radius:8px;padding:9px 12px;font-size:13px;color:#0d2580;outline:none;font-family:inherit;background:#fff;width:100%">
-            <option value="user">User</option>
-            <option value="admin" id="adminRoleOpt" style="display:none">Admin</option>
-          </select>
-        </div>
+        <div id="adminMsgBox" style="display:none;margin-top:10px;font-size:12px;padding:8px 12px;border-radius:6px"></div>
+        <button onclick="addUser()" style="margin-top:12px;width:100%;background:#f97316;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ เพิ่ม User</button>
       </div>
-      <div id="adminMsgBox" style="display:none;margin-top:10px;font-size:12px;padding:8px 12px;border-radius:6px"></div>
-      <button onclick="addUser()" style="margin-top:12px;width:100%;background:#f97316;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ เพิ่ม User</button>
+
+      <!-- ── TAB: SESSIONS (owner only) ── -->
+      <div id="tabSessions" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:12px;color:#64748b">ผู้ใช้ที่ login อยู่ขณะนี้</span>
+          <button onclick="loadSessions()" style="font-size:11px;color:#1a4fc4;background:none;border:none;cursor:pointer;font-family:inherit">↻ รีเฟรช</button>
+        </div>
+        <div id="sessionListWrap"><div style="color:#aac0d8;font-size:13px">กำลังโหลด...</div></div>
+      </div>
+
+      <!-- ── TAB: LOGS (owner only) ── -->
+      <div id="tabLogs" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:12px;color:#64748b">ประวัติ login / logout ล่าสุด 200 รายการ</span>
+          <button onclick="loadLogs()" style="font-size:11px;color:#1a4fc4;background:none;border:none;cursor:pointer;font-family:inherit">↻ รีเฟรช</button>
+        </div>
+        <div id="logListWrap"><div style="color:#aac0d8;font-size:13px">กำลังโหลด...</div></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -609,7 +637,10 @@ function checkSession(){
 }
 checkSession();
 
-function logout(){
+async function logout(){
+  try{
+    await fetch(`${WORKER_URL}/auth/logout`,{method:'POST',headers:authHeaders()});
+  }catch(e){}
   localStorage.removeItem(TOKEN_KEY);
   location.reload();
 }
@@ -626,12 +657,81 @@ function authHeaders(){
 
 function openAdminModal(){
   if(!['admin','owner'].includes(currentUser.role)){return;}
-  // owner เห็น option Admin ใน dropdown
   const adminOpt=document.getElementById('adminRoleOpt');
   if(adminOpt) adminOpt.style.display=currentUser.role==='owner'?'':'none';
+  // Owner เห็น tabs
+  const tabBar=document.getElementById('ownerTabBar');
+  if(currentUser.role==='owner') tabBar.style.display='flex';
+  else tabBar.style.display='none';
+  switchAdminTab('users', document.querySelector('.admin-tab'));
   document.getElementById('adminModal').classList.add('show');
-  loadUsers();
-  loadConfig();
+}
+
+function switchAdminTab(tab, btn){
+  ['users','sessions','logs'].forEach(t=>{
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
+  });
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(tab==='users'){ loadUsers(); loadConfig(); }
+  else if(tab==='sessions') loadSessions();
+  else if(tab==='logs') loadLogs();
+}
+
+function timeAgo(isoStr){
+  if(!isoStr) return '—';
+  const diff=Date.now()-new Date(isoStr).getTime();
+  const m=Math.floor(diff/60000);
+  if(m<1) return 'เมื่อกี้';
+  if(m<60) return `${m} นาทีที่แล้ว`;
+  const h=Math.floor(m/60);
+  if(h<24) return `${h} ชั่วโมงที่แล้ว`;
+  return `${Math.floor(h/24)} วันที่แล้ว`;
+}
+
+async function loadSessions(){
+  const wrap=document.getElementById('sessionListWrap');
+  wrap.innerHTML='<div style="color:#aac0d8;font-size:13px">กำลังโหลด...</div>';
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/sessions`,{headers:authHeaders()});
+    const data=await res.json();
+    if(!res.ok){wrap.innerHTML=`<div style="color:#991b1b;font-size:13px">${data.error}</div>`;return;}
+    if(!data.sessions||!data.sessions.length){
+      wrap.innerHTML='<div style="color:#aac0d8;font-size:13px;padding:20px 0;text-align:center">ไม่มีใคร login อยู่ขณะนี้</div>';return;
+    }
+    wrap.innerHTML=`<table class="admin-table">
+      <thead><tr><th>Username</th><th>Role</th><th>Login เมื่อ</th><th>IP</th><th>หมดอายุ</th></tr></thead>
+      <tbody>${data.sessions.map(s=>`<tr>
+        <td style="font-weight:500;color:#0d2580">${s.username}${s.username===currentUser.username?'<span style="font-size:10px;color:#f97316;margin-left:5px">(คุณ)</span>':''}</td>
+        <td><span class="role-badge role-${s.role||'user'}">${s.role==='owner'?'👑 owner':s.role||'user'}</span></td>
+        <td style="font-size:12px;color:#475569">${s.loginAt?new Date(s.loginAt).toLocaleString('th-TH'):'—'}<br><span style="font-size:10px;color:#aac0d8">${timeAgo(s.loginAt)}</span></td>
+        <td style="font-size:11px;color:#64748b;font-family:monospace">${s.ip||'—'}</td>
+        <td style="font-size:11px;color:#aac0d8">${s.exp?new Date(s.exp).toLocaleString('th-TH'):'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }catch(e){wrap.innerHTML=`<div style="color:#991b1b;font-size:13px">${e.message}</div>`;}
+}
+
+async function loadLogs(){
+  const wrap=document.getElementById('logListWrap');
+  wrap.innerHTML='<div style="color:#aac0d8;font-size:13px">กำลังโหลด...</div>';
+  try{
+    const res=await fetch(`${WORKER_URL}/auth/logs`,{headers:authHeaders()});
+    const data=await res.json();
+    if(!res.ok){wrap.innerHTML=`<div style="color:#991b1b;font-size:13px">${data.error}</div>`;return;}
+    if(!data.logs||!data.logs.length){
+      wrap.innerHTML='<div style="color:#aac0d8;font-size:13px;padding:20px 0;text-align:center">ยังไม่มีประวัติ</div>';return;
+    }
+    wrap.innerHTML=`<table class="admin-table">
+      <thead><tr><th>เวลา</th><th>Username</th><th>Action</th><th>IP</th></tr></thead>
+      <tbody>${data.logs.map(l=>`<tr>
+        <td style="font-size:11px;color:#475569;white-space:nowrap">${l.at?new Date(l.at).toLocaleString('th-TH'):'—'}</td>
+        <td style="font-weight:500;color:#0d2580">${l.username||'—'}</td>
+        <td><span style="font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600;background:${l.action==='login'?'#f0fdf4':'#fff1f2'};color:${l.action==='login'?'#166534':'#991b1b'}">${l.action==='login'?'🔑 login':'🚪 logout'}</span></td>
+        <td style="font-size:11px;color:#64748b;font-family:monospace">${l.ip||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }catch(e){wrap.innerHTML=`<div style="color:#991b1b;font-size:13px">${e.message}</div>`;}
 }
 function closeAdminModal(){
   document.getElementById('adminModal').classList.remove('show');
