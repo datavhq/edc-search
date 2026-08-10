@@ -539,8 +539,22 @@ function render(){
 async function loadBank(b){
   try{
     const r=await fetch(`data_${b}.json?`+Date.now());
-    const d=await r.json();
-    DB[b]=d.records||[];
+    const meta=await r.json();
+    let records;
+    if(Array.isArray(meta.records)){
+      // รูปแบบเก่า: ไฟล์เดียวมี records อยู่ในตัว
+      records=meta.records;
+    }else{
+      // รูปแบบใหม่: meta บอกจำนวน part → โหลดทุก part แล้วรวมกัน
+      const parts=meta.parts||1;
+      const chunks=await Promise.all(
+        Array.from({length:parts},(_,i)=>
+          fetch(`data_${b}_part${i+1}.json?`+Date.now()).then(res=>res.json())
+        )
+      );
+      records=chunks.flat();
+    }
+    DB[b]=records;
     const el=document.getElementById(`cnt-${b}`);
     if(el) el.textContent=DB[b].length.toLocaleString();
     document.getElementById('cnt-ALL').textContent=Object.values(DB).flat().length.toLocaleString();
